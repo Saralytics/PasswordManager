@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import User
-from rest_framework.fields import CharField, EmailField, DateTimeField
+from rest_framework.fields import CharField, EmailField
 
 class UserSerializer(serializers.ModelSerializer):
     username = CharField(required=True)
@@ -17,4 +17,14 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Create and return a new `User` instance, given the validated data.
         """
-        return User.objects.create(**validated_data)
+        user = User(**validated_data)
+        user.full_clean()  # Validate before saving
+        user.save()
+        return user
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.full_clean()  # Validate before saving
+        instance.save()
+        return instance
