@@ -26,7 +26,4 @@ def user_list(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-        # data = request.data
-        # new_user = User(username='li',email='li@example.com',password='873453kjneg',created_at='2023-01-01')
-        # new_user.save()
         return HttpResponse(serializer.data, status=status.HTTP_201_CREATED)
