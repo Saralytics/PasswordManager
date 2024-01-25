@@ -7,15 +7,15 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 
 
-@api_view(['GET','PUT','POST'])
+@api_view(['GET','PUT'])
 def user_list(request):
     if request.method == 'GET':
         # get users
         users = User.objects.all()
         # serialize users
         users_serializer = UserSerializer(users, many=True)
-        # return json
-        return JsonResponse(users_serializer.data, safe=False)
+        username = users_serializer.data[0]["username"]
+        return HttpResponse(f"Hi {username}, you are logged in")
 
 
 @api_view(['POST'])
@@ -25,7 +25,7 @@ def user_register(request):
             user = serializer.save()
             return Response({
                 "user": serializer.data
-            })
+            }, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
