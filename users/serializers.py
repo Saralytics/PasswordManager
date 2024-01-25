@@ -1,24 +1,18 @@
 from rest_framework import serializers
-from .models import User
-from rest_framework.fields import CharField, EmailField
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
-    username = CharField(required=True)
-    email = EmailField(required=True)
-    password = CharField(required=True)
-
     class Meta:
         model = User
-        fields = ['username',
-                  'email',
-                  'password']
-        
+        fields = ('username', 'password', 'email')
+
     def create(self, validated_data):
-        """
-        Create and return a new `User` instance, given the validated data.
-        """
-        user = User(**validated_data)
-        user.full_clean()  # Validate before saving
+        user = User(
+            email=validated_data['email'],
+            username=validated_data['username']
+        )
+        user.set_password(validated_data['password'])
         user.save()
         return user
     
