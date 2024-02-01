@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['0.0.0.0','localhost','127.0.0.1']
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

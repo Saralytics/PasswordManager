@@ -12,11 +12,13 @@ services:
       - backend
     expose:
       - 5432
-  web:
-    build: .
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code
+      - ./backend:/app/backend
     ports:
       - "8000:8000"
     environment:
@@ -26,6 +28,19 @@ services:
     depends_on:
       - db
     networks:
+      - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: npm start
+    ports:
+      - '3000:3000'
+
+    volumes:
+      - ./frontend:/app/frontend
+
+    depends_on:
       - backend
 
 networks:
