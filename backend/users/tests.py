@@ -128,7 +128,7 @@ class UserTests(APITestCase):
         url = "http://0.0.0.0:8000/api/auth/"
         response = self.client.post(url, {'username': 'testuser', 'password': 'testpassword123'}) 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('Successful Login', response.content.decode())
+        self.assertIn('Login successfully', response.content.decode())
 
         # Unsuccessful login
         response = self.client.post(url, {'username': 'testuser', 'password': 'wrongpassword'})

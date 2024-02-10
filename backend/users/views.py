@@ -8,17 +8,15 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.middleware import csrf
+from django.conf import settings
 
-
-def set_token_cookie(response, token):
-    response.set_cookie(
-        'auth_token',  # Cookie name
-        token, 
-        httponly=True,
-        secure=False,  
-        samesite='Lax'
-    )
-    return response
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 @permission_classes([IsAuthenticated])
@@ -56,20 +54,25 @@ def user_register(request):
 @api_view(['POST'])
 def login_view(request):
     if request.method == 'POST':
+        response = Response()
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            # Create a new token for the user
-            refresh = RefreshToken.for_user(user)
-            refresh_token = str(refresh)
-            token = str(refresh.access_token)
-            response = HttpResponse({
-                'message': 'Successful Login'
-            }, status=status.HTTP_200_OK)
-            response = set_token_cookie(response, token)
-            return response
+            if user.is_active:
+                data = get_tokens_for_user(user)
+                response.set_cookie(
+                    key = settings.SIMPLE_JWT['AUTH_COOKIE'],
+                    value = data["access"],
+                    expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                    secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                    httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                    samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+                )
+                csrf.get_token(request)
+                response.data = {"Success" : "Login successfully","data":data} # no 
+                return response
             
         else:
             # Authentication failed
@@ -79,3 +82,6 @@ def logout_view(request):
     response = HttpResponse("User logged out")
     response.delete_cookie('auth_token')
     return response
+
+def welcome(request):
+    return HttpResponse(f"Hi welcome")

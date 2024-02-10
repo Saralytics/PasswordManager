@@ -10,7 +10,7 @@ function App() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://0.0.0.0:8000/api/auth/",
+        "https://27c7-217-164-202-47.ngrok-free.app/api/auth/",
         {
           username,
           password,

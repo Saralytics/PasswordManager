@@ -43,6 +43,25 @@ services:
     depends_on:
       - backend
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    # expose:
+    #   - 4040
+    ports:
+      - "4040:4040"
+    command:
+          - "start"
+          - "--all"
+          - "--config"
+          - "/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/ngrok.yml
+    depends_on:
+      - backend
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge
