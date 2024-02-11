@@ -21,7 +21,7 @@ def get_tokens_for_user(user):
 
 @permission_classes([IsAuthenticated])
 @api_view(['GET','PUT'])
-def user_list(request):
+def user_home(request):
     if request.method == 'GET':
         # Extract the token and decode it
         jwt_object = JWTAuthentication()
