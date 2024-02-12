@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .serializers import UserSerializer
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 

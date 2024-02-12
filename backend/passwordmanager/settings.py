@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    # 'users',
+    'vault',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
