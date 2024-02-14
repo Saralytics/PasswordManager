@@ -81,3 +81,50 @@ class PasswordRetrievalTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, {"error": "Password is not found"})
 
+class PasswordUpdateTests(APITestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        # Create a StoredPassword instance for the test user
+        self.test_website = 'https://example.com'
+        self.test_password = 'password123'
+        StoredPassword.objects.create(user=self.user, website=self.test_website, username='exampleuser', password=self.test_password)
+        # URL for the retrieve_password view
+        self.update_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/updatepasswords/'
+
+    def test_update_password_success(self):
+        # Authenticate the test client
+        self.client.force_authenticate(user=self.user)
+
+        # Make a PUT request to the view with the website data
+        response = self.client.put(self.update_url, {'website': self.test_website, 'password':'updated123'}, format='json')
+        
+        # Check that the response is successful and the password is indeed updated
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {"message": "Password is updated"})
+
+        updated_row = StoredPassword.objects.get(user=self.user,website=self.test_website)
+        self.assertEqual(updated_row.password, 'updated123')
+
+    # def test_retrieve_password_no_website(self):
+    #     # Authenticate the test client
+    #     self.client.force_authenticate(user=self.user)
+
+    #     # Make a POST request to the view without the website data
+    #     response = self.client.post(self.retrieve_url, {}, format='json')
+        
+    #     # Check that the response indicates a website is required
+    #     self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     self.assertEqual(response.data, {"error": "Website is required"})
+
+    # def test_retrieve_password_not_found(self):
+    #     # Authenticate the test client
+    #     self.client.force_authenticate(user=self.user)
+
+    #     # Make a POST request to the view with a website that doesn't match any stored passwords
+    #     response = self.client.post(self.retrieve_url, {'website': 'https://nonexistent.com'}, format='json')
+        
+    #     # Check that the response indicates the password is not found
+    #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    #     self.assertEqual(response.data, {"error": "Password is not found"})
+

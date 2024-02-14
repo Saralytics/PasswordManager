@@ -33,3 +33,25 @@ def retrieve_password(request):
         return Response({"Password is": serializer.data['password']})
     else:
         return Response({"error": "Password is not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['PUT'])
+def update_password(request):
+    # get request with website, get password back
+    website = request.data.get('website')
+    new_password = request.data.get('password')
+    if not website or not new_password:
+        return Response({"error": "Website and new password are required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        stored_password = StoredPassword.objects.get(user=request.user, website=website) # there should be only 1 password
+    
+    except StoredPassword.DoesNotExist:
+        return Response({'error': 'Password for the provided website not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if stored_password:
+        stored_password.password = new_password
+        stored_password.save()
+
+    return Response({"message": "Password is updated"}, status=status.HTTP_200_OK)
