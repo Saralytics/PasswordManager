@@ -56,3 +56,19 @@ def update_password(request):
          return Response({"message": "Password is updated"}, status=status.HTTP_200_OK)
     else:
          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(['DELETE'])
+def delete_stored_password(request):
+    website = request.data.get('website')
+
+    if not website:
+        return Response({"error": "Website query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        stored_password = StoredPassword.objects.get(user=request.user, website=website)
+        stored_password.delete()
+        return Response({"message": "Password deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+    except StoredPassword.DoesNotExist:
+        return Response({"error": "Stored password not found."}, status=status.HTTP_404_NOT_FOUND)
