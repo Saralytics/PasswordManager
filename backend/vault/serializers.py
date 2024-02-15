@@ -6,3 +6,7 @@ class PasswordSerializer(serializers.ModelSerializer):
         model = StoredPassword
         fields = ['id', 'website', 'username', 'password', 'created_at', 'updated_at']
     
+    def update(self, instance, validated_data):
+        instance.password = validated_data.get('password', instance.password)
+        instance.save()
+        return instance

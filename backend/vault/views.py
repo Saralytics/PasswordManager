@@ -50,8 +50,9 @@ def update_password(request):
     except StoredPassword.DoesNotExist:
         return Response({'error': 'Password for the provided website not found.'}, status=status.HTTP_404_NOT_FOUND)
     
-    if stored_password:
-        stored_password.password = new_password
-        stored_password.save()
-
-    return Response({"message": "Password is updated"}, status=status.HTTP_200_OK)
+    serializer = PasswordSerializer(stored_password, data=request.data, partial=True)
+    if serializer.is_valid():
+         serializer.save()
+         return Response({"message": "Password is updated"}, status=status.HTTP_200_OK)
+    else:
+         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
