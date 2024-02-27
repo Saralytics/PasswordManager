@@ -11,3 +11,5 @@ class StoredPassword(models.Model):
 
     def __str__(self):
         return self.website
+    
+

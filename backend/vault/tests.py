@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from .models import StoredPassword  # Update this import path based on your project structure
+from django.core.cache import cache
 
 class StoredPasswordTests(APITestCase):
     def setUp(self):
@@ -158,3 +159,25 @@ class PasswordDeleteTests(APITestCase):
         
         self.assertEqual(response.data, {"error": "Password is not found"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class PasswordGenerateTests(APITestCase):
+    def setUp(self):
+        # Create a test user
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        
+        # URL for the generate view
+        self.generate_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/passwords/generate/'
+
+    def test_generate_password_success(self):
+        
+        self.client.force_authenticate(user=self.user)
+
+        # Make a GET request to the generate url
+        response = self.client.get(self.generate_url)
+
+        # Check that client gets the new password back
+        # Check that status code is 201
+        cached_password = cache.get(f"user_{self.user.id}_temp_password")
+
+        self.assertEqual(response.data, cached_password)

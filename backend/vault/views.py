@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.middleware import csrf
 from django.conf import settings
+from .utils import PasswordGenerator
+from django.core.cache import cache
 
 
 @permission_classes([IsAuthenticated])
@@ -72,3 +74,21 @@ def delete_stored_password(request):
         return Response({"message": "Password deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except StoredPassword.DoesNotExist:
         return Response({"error": "Stored password not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def password_generate(request):
+    generator = PasswordGenerator()
+    new_password = generator.generate()
+
+    # save the new password to cache
+    # Define a unique cache key for this operation
+    cache_key = f"user_{request.user.id}_temp_password"
+    cache_timeout = 600  # Time in seconds for how long the password should be cached (e.g., 10 minutes)
+
+    # Save the new password in the cache
+    cache.set(cache_key, new_password, cache_timeout)
+
+    # Return the new password to user
+    return Response(new_password, status=status.HTTP_201_CREATED)
