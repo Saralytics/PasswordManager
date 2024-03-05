@@ -24,19 +24,19 @@ def get_tokens_for_user(user):
 def user_home(request):
     if request.method == 'GET':
         # Extract the token and decode it
-        jwt_object = JWTAuthentication()
-        header = jwt_object.get_header(request)
-        raw_token = jwt_object.get_raw_token(header)
-        validated_token = jwt_object.get_validated_token(raw_token)
-        user_id = jwt_object.get_user(validated_token).id
+        # jwt_object = JWTAuthentication()
+        # header = jwt_object.get_header(request)
+        # raw_token = jwt_object.get_raw_token(header)
+        # validated_token = jwt_object.get_validated_token(raw_token)
+        # user_id = jwt_object.get_user(validated_token).id
 
-        # Get the user
-        user = User.objects.get(id=user_id)
+        # # Get the user
+        # user = User.objects.get(id=user_id)
 
-        # Serialize the user
-        user_serializer = UserSerializer(user)
+        # # Serialize the user
+        # user_serializer = UserSerializer(user)
 
-        return HttpResponse(f"Hi {user.username}, you are logged in")
+        return HttpResponse(f"Hi you, you are logged in")
 
 
 @api_view(['POST'])
