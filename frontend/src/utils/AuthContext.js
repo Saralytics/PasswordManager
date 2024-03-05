@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyAuthStatus = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/verify', { withCredentials: true });
+      const response = await axios.get('http://localhost:8000/api/auth/verify', { withCredentials: true });
       setIsAuthenticated(true);
       const { username } = response.data;
       setUserName(username);

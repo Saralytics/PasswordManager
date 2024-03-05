@@ -19,24 +19,24 @@ def get_tokens_for_user(user):
     }
 
 
-@permission_classes([IsAuthenticated])
 @api_view(['GET','PUT'])
+@permission_classes([IsAuthenticated])
 def user_home(request):
     if request.method == 'GET':
-        # Extract the token and decode it
-        jwt_object = JWTAuthentication()
-        header = jwt_object.get_header(request)
-        raw_token = jwt_object.get_raw_token(header)
-        validated_token = jwt_object.get_validated_token(raw_token)
-        user_id = jwt_object.get_user(validated_token).id
+        # # Extract the token and decode it
+        # jwt_object = JWTAuthentication()
+        # header = jwt_object.get_header(request)
+        # raw_token = jwt_object.get_raw_token(header)
+        # validated_token = jwt_object.get_validated_token(raw_token)
+        # user_id = jwt_object.get_user(validated_token).id
 
-        # Get the user
-        user = User.objects.get(id=user_id)
+        # # Get the user
+        # user = User.objects.get(id=user_id)
 
-        # Serialize the user
-        user_serializer = UserSerializer(user)
+        # # Serialize the user
+        # user_serializer = UserSerializer(user)
 
-        return HttpResponse(f"Hi {user.username}, you are logged in")
+        return HttpResponse(f"Hi, you are logged in")
 
 
 @api_view(['POST'])
@@ -78,10 +78,20 @@ def login_view(request):
             # Authentication failed
             return Response({'message': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def logout_view(request):
     response = HttpResponse("User logged out")
-    response.delete_cookie('auth_token')
+    response.delete_cookie('access_token')
     return response
 
-def welcome(request):
-    return HttpResponse(f"Hi welcome")
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def verify_user_view(request):
+    # If the request reaches this point, the user is authenticated
+    return Response({
+        "isAuthenticated": True,
+        "username": request.user.username,
+    }, status=status.HTTP_200_OK)

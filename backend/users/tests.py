@@ -112,7 +112,13 @@ class UserTests(APITestCase):
         url = "http://0.0.0.0:8000/api/users/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('Hi testuser, you are logged in', response.content.decode())
+        self.assertIn('Hi, you are logged in', response.content.decode())
+
+    def test_user_list_unauth(self):
+        
+        url = "http://0.0.0.0:8000/api/users/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_user_register(self):
         data = {'username': 'newuser', 'password': 'newpassword123', 'email': 'newuser@example.com'}
