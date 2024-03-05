@@ -19,8 +19,8 @@ def get_tokens_for_user(user):
     }
 
 
-@permission_classes([IsAuthenticated])
 @api_view(['GET','PUT'])
+@permission_classes([IsAuthenticated])
 def user_home(request):
     if request.method == 'GET':
         # Extract the token and decode it
