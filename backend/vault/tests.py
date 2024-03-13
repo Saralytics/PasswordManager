@@ -10,7 +10,7 @@ class StoredPasswordTests(APITestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword123')
         
         # URL for create_stored_password view
-        self.create_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/passwords/'  # Update with your actual URL name
+        self.create_url = 'http://localhost:8000/vault/passwords/'  # Update with your actual URL name
 
 
     def test_create_stored_password(self):
@@ -47,7 +47,7 @@ class PasswordRetrievalTests(APITestCase):
         self.test_password = 'password123'
         StoredPassword.objects.create(user=self.user, website=self.test_website, username='exampleuser', password=self.test_password)
         # URL for the retrieve_password view
-        self.retrieve_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/search/'
+        self.retrieve_url = 'http://localhost:8000/vault/search/'
 
     def test_retrieve_password_success(self):
         # Authenticate the test client
@@ -91,7 +91,7 @@ class PasswordUpdateTests(APITestCase):
         self.test_password = 'password123'
         StoredPassword.objects.create(user=self.user, website=self.test_website, username='exampleuser', password=self.test_password)
         # URL for the retrieve_password view
-        self.update_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/passwords/update/'
+        self.update_url = 'http://localhost:8000/vault/passwords/update/'
 
     def test_update_password_success(self):
         # Authenticate the test client
@@ -139,8 +139,8 @@ class PasswordDeleteTests(APITestCase):
         self.test_password = 'password123'
         StoredPassword.objects.create(user=self.user, website=self.test_website, username='exampleuser', password=self.test_password)
         # URL for the delete view
-        self.delete_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/passwords/delete/'
-        self.retrieve_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/search/'
+        self.delete_url = 'http://localhost:8000/vault/passwords/delete/'
+        self.retrieve_url = 'http://localhost:8000/vault/search/'
 
     def test_delete_password_success(self):
         # Authenticate the test client
@@ -167,7 +167,7 @@ class PasswordGenerateTests(APITestCase):
         self.user = User.objects.create_user(username='testuser', password='testpassword')
         
         # URL for the generate view
-        self.generate_url = 'https://27c7-217-164-202-47.ngrok-free.app/vault/passwords/generate/'
+        self.generate_url = 'http://localhost:8000/vault/passwords/generate/'
 
     def test_generate_password_success(self):
         
