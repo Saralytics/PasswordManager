@@ -1,4 +1,3 @@
-// LogoutButton.js
 import React from 'react';
 import { useAuth } from '../utils/AuthContext'; // Adjust the import path as needed
 
