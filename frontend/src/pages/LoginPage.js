@@ -16,7 +16,8 @@ const LoginPage = () => {
       navigate('/new-password'); // Redirect to a protected page or dashboard
       console.log('Login successful');
     } catch (error) {
-      alert('Login failed');
+      // alert('Login failed');
+      console.log(error);
     }
   };
 

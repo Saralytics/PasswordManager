@@ -41,14 +41,14 @@ def user_home(request):
 
 @api_view(['POST'])
 def user_register(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        return Response({
-            "user": serializer.data
-        }, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "user": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -70,9 +70,7 @@ def login_view(request):
                     httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                     samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-                csrf_token = csrf.get_token(request)
-                print(csrf_token)
-                
+                csrf.get_token(request)
                 response.data = {"Success" : "Login successfully","data":data} # no 
                 return response
             
