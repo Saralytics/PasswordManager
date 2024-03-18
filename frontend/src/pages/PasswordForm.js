@@ -9,10 +9,24 @@ function StorePasswordForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [generatedPassword, setGeneratedPassword] = useState('');
+  const [formError, setFormError] = useState(''); 
+  const [apiError, setApiError] = useState(''); 
+  const [successMessage, setSuccessMessage] = useState('');
   let navigate = useNavigate();
+
+  const validateForm = () => {
+    if (!website || !username || !password) {
+      setFormError('All fields are required.');
+      return false;
+    }
+    
+    setFormError(''); // Clear any previous error messages
+    return true;
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    validateForm();
     try {
       const response = await axios.post('http://localhost:8000/vault/passwords/create/', {
          website, username, password 
@@ -20,21 +34,19 @@ function StorePasswordForm() {
             withCredentials: true
           });
       console.log('Password stored successfully:', response.data);
-      alert('Password stored successfully');
+      setSuccessMessage('Password stored successfully');
     } catch (error) {
       if (error.response && error.response.status === 403) {
-        // Inform the user they need to log in
-        alert('You must be logged in to perform this action.');
+        setApiError('You must be logged in to perform this action.');
         // Redirect user to login page
         navigate('/login');
       } else {
         // Handle other errors
         console.error('Error storing password:', error.response ? error.response.data : 'Unknown error');
-        alert('An error occurred while storing the password.');
+        setApiError('An error occurred while storing the password.');
       }
     }
   };
-
 
   const handleGeneratePassword = async () => {
     try {
@@ -44,14 +56,20 @@ function StorePasswordForm() {
       setGeneratedPassword(response.data.password); // The response has a password field
       setPassword(response.data.password); // Optionally auto-fill the password field with the generated password
     } catch (error) {
-      console.error('Error generating password:', error.response ? error.response.data : 'Unknown error');
-      alert('Failed to generate password. Please ensure you are logged in.');
+      if (error.response && error.response.status === 403) {
+        setApiError('You must be logged in to perform this action.')
+        navigate('/login');
+      } else {
+        console.error('Error generating password:', error.response ? error.response.data : 'Unknown error');
+        setApiError('An error occured while storing the password.');
+      }
     }
   };
   
 
   return (
     <form onSubmit={handleSubmit}>
+      
       <div>
         <label htmlFor="website">Website URL:</label>
         <input
@@ -70,16 +88,7 @@ function StorePasswordForm() {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-      {/* <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div> */}
-      {/* <button type="submit">Store Password</button> */}
+  
       <div>
         <label htmlFor="password">Password:</label>
         <input
@@ -101,6 +110,9 @@ function StorePasswordForm() {
           <button onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button> {/* Copy to clipboard button */}
         </div>
       )}
+      {successMessage && <div className="success-message">{successMessage}</div>}
+      {formError && <div className="error">{formError}</div>}
+      {apiError && <div className="error">{apiError}</div>}
       <button type="submit">Store Password</button>
     </form>
   );
