@@ -20,13 +20,6 @@ function App() {
         <Router>
           <Header />
           <Routes>
-          {/* <div> */}
-        {/* {isAuthenticated ? (
-          <p>Hi {userName}, you are logged in</p>
-        ) : (
-          <p>Welcome to Password Manager.</p>
-        )}
-      </div> */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
