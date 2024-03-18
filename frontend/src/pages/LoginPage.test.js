@@ -72,5 +72,54 @@ describe('LoginPage', () => {
     expect(await screen.findByText('Username or password is incorrect')).toBeInTheDocument();
   });
   
+  test('input fields update the component state', () => {
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+  
+    // Simulate user typing in the username and password fields
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'testpass' } });
+  
+    // Assert that the inputs' values have been updated
+    expect(screen.getByLabelText('Username:').value).toBe('testuser');
+    expect(screen.getByLabelText('Password:').value).toBe('testpass');
+  });
+
+  // Since `validate` is an internal function of the component, we indirectly test it through the UI effects it triggers.
+
+  test('form validation displays error messages for empty fields', () => {
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+
+    // Attempt to submit the form without filling in details
+    fireEvent.click(screen.getByText('Login'));
+
+    // Check for validation messages
+    expect(screen.getByText('Username is required')).toBeInTheDocument();
+    expect(screen.getByText('Password is required')).toBeInTheDocument();
+  });
+
+  test('form validation passes with correct input and removes error messages', async () => {
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+
+    // Fill out the form correctly
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'validuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'validpass' } });
+    fireEvent.click(screen.getByText('Login'));
+
+    // Assert that error messages are not present
+    let errorMessages = screen.queryByText('Username is required') || screen.queryByText('Password is required');
+    expect(errorMessages).not.toBeInTheDocument();
+  });
 
 });
