@@ -1,117 +1,59 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import userEvent from '@testing-library/user-event';
-import LoginPage from './LoginPage'; // Adjust the path based on your project structure
-import { useAuth } from '../utils/AuthContext';
-import { act } from 'react-dom/test-utils';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import * as AuthContext from '../utils/AuthContext';
 
+const mockLogin = jest.fn();
+const mockNavigate = jest.fn();
 
-// Mocking useNavigate and useAuth
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'), // import and retain the original functionalities
-    useNavigate: jest.fn(),
-  }));
-  
 jest.mock('../utils/AuthContext', () => ({
-useAuth: () => ({
-    login: jest.fn(),
-}),
+  useAuth: () => ({
+    login: mockLogin,
+  }),
 }));
-  
-beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+}));
+
+describe('LoginPage', () => {
+  beforeEach(() => {
+    // Reset mocks before each test
+    mockLogin.mockReset();
+    mockNavigate.mockReset();
   });
 
-  describe('LoginPage Tests', () => {
-    test('displays error messages for empty inputs', async () => {
-      render(
-        <MemoryRouter>
-          <LoginPage />
-        </MemoryRouter>
-      );
-  
-      const loginButton = screen.getByRole('button', { name: /login/i });
-      // eslint-disable-next-line testing-library/no-unnecessary-act
-      await act(async () => {
-        userEvent.click(loginButton);
-      });
-  
-      // Assert that validation messages are displayed
-        expect(await screen.findByText(/Username is required/i)).toBeInTheDocument();
-        expect(await screen.findByText(/Password is required/i)).toBeInTheDocument();
-    });
+  test('validates inputs correctly', async () => {
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+
+    // Attempt to submit without filling out the form
+    fireEvent.click(screen.getByText('Login'));
+    expect(screen.getByText('Username is required')).toBeInTheDocument();
+    expect(screen.getByText('Password is required')).toBeInTheDocument();
+  });
+
+  test('handles login success', async () => {
+    mockLogin.mockResolvedValueOnce(); // Mock login as successful
+
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+
+    // Fill out the form and submit
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'password' } });
+    fireEvent.click(screen.getByText('Login'));
+
+    expect(mockLogin).toHaveBeenCalledWith('testuser', 'password');
+    // expect(mockNavigate).toHaveBeenCalledWith('/new-password'); // Check if navigated correctly
+  });
+
 });
-
-
-// test('calls login with correct credentials', async () => {
-//     const mockLogin = jest.fn();
-//     jest.spyOn(authContext, 'useAuth').mockReturnValue({ login: mockLogin });
-//     const mockNavigate = jest.fn();
-//     jest.mocked(useNavigate).mockImplementation(() => mockNavigate);
-
-//     render(
-//       <MemoryRouter>
-//         <LoginPage />
-//       </MemoryRouter>
-//     );
-
-//     // Simulate user input
-//     await userEvent.type(screen.getByLabelText(/username/i), 'testuser');
-//     await userEvent.type(screen.getByLabelText(/password/i), 'password');
-
-//     // Simulate form submission
-//     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-
-//     // Wait for the login function to be called
-//     await waitFor(() => {
-//       expect(mockLogin).toHaveBeenCalledWith('testuser', 'password');
-//     });
-//   });
-
-//   test('navigates to new-password on successful login', async () => {
-//     const mockLogin = jest.fn().mockResolvedValue(true);
-//     jest.spyOn(authContext, 'useAuth').mockReturnValue({ login: mockLogin });
-//     const mockNavigate = jest.fn();
-//     jest.mocked(useNavigate).mockImplementation(() => mockNavigate);
-
-//     render(
-//       <MemoryRouter>
-//         <LoginPage />
-//       </MemoryRouter>
-//     );
-
-//     // Fill out and submit form
-//     await userEvent.type(screen.getByLabelText(/username/i), 'testuser');
-//     await userEvent.type(screen.getByLabelText(/password/i), 'mypassword');
-//     userEvent.click(screen.getByRole('button', { name: /login/i }));
-
-//     // Assert navigation to new-password page
-//     await waitFor(() => {
-//       expect(mockNavigate).toHaveBeenCalledWith('/new-password');
-//     });
-//   });
-
-//   test('displays error on login failure', async () => {
-//     window.alert = jest.fn(); // Mock window.alert for testing
-//     const mockLogin = jest.fn().mockRejectedValue(new Error('Login failed'));
-//     jest.spyOn(authContext, 'useAuth').mockReturnValue({ login: mockLogin });
-
-//     render(
-//       <MemoryRouter>
-//         <LoginPage />
-//       </MemoryRouter>
-//     );
-
-//     // Simulate form submission with the login button
-//     await userEvent.type(screen.getByLabelText(/username/i), 'wronguser');
-//     await userEvent.type(screen.getByLabelText(/password/i), 'wrongpass');
-//     userEvent.click(screen.getByRole('button', { name: /login/i }));
-
-//     // Assert alert is called
-//     await waitFor(() => {
-//       expect(window.alert).toHaveBeenCalledWith('Username or password is incorrect');
-//     });
-//   });
-// });

@@ -12,11 +12,5 @@ jest.mock('axios', () => ({
 // Mock window.alert globally
 window.alert = jest.fn();
 
-// jest.mock('./utils/AuthContext', () => ({
-//   useAuth: () => ({
-//     setIsAuthenticated: jest.fn(),
-//     // Mock other context values and functions as needed
-//   }),
-// }));
-  
-  
+const mockSetItem = jest.fn();
+Storage.prototype.setItem = mockSetItem;
