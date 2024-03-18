@@ -16,7 +16,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import StorePasswordForm from './StorePasswordForm';
+import StorePasswordForm from './PasswordForm';
 
 const mockAxios = new MockAdapter(axios);
 
