@@ -7,6 +7,7 @@ import Header from "./components/Header";
 import StorePasswordForm from "./pages/PasswordForm";
 import { AuthProvider } from './utils/AuthContext';
 import LogoutButton from "./components/LogoutButton";
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 // import axios from "axios";
@@ -23,8 +24,16 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/new-password" element={<StorePasswordForm />} />
-            <Route path="/logout" element={<LogoutButton />} />
+            <Route path="/new-password" element={
+              <ProtectedRoute>
+                <StorePasswordForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/logout" element={
+              <ProtectedRoute>
+                <LogoutButton />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Router>
       </AuthProvider>
