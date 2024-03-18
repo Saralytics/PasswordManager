@@ -56,4 +56,21 @@ describe('LoginPage', () => {
     // expect(mockNavigate).toHaveBeenCalledWith('/new-password'); // Check if navigated correctly
   });
 
+  test('displays an error message upon login failure', async () => {
+    mockLogin.mockRejectedValueOnce(new Error('Username or password is incorrect'));
+  
+    render(
+      <BrowserRouter>
+        <LoginPage />
+      </BrowserRouter>
+    );
+  
+    fireEvent.change(screen.getByLabelText('Username:'), { target: { value: 'wronguser' } });
+    fireEvent.change(screen.getByLabelText('Password:'), { target: { value: 'wrongpass' } });
+    fireEvent.click(screen.getByText('Login'));
+  
+    expect(await screen.findByText('Username or password is incorrect')).toBeInTheDocument();
+  });
+  
+
 });

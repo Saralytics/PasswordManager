@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState('');
+  const [loginError, setLoginError] = useState('');
   const { login } = useAuth();
   let navigate = useNavigate();
 
@@ -27,7 +28,7 @@ const LoginPage = () => {
       navigate('/new-password'); // Redirect to a protected page or dashboard
       console.log('Login successful');
     } catch (error) {
-      alert('Username or password is incorrect');
+      setLoginError('Username or password is incorrect'); // Set login error state
     }
   };
 
@@ -53,6 +54,7 @@ const LoginPage = () => {
         />
         {errors.password && <p>{errors.password}</p>}
       </div>
+      {loginError && <p>{loginError}</p>}
       <button type="submit">Login</button>
     </form>
   );
