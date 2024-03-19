@@ -56,12 +56,12 @@ describe('StorePasswordForm', () => {
 
     });
   
-    // it('generate password fails with unauthorized access', async () => {
-    //   mockAxios.onGet('http://localhost:8000/vault/passwords/generate/').reply(403);
-    //   render(<StorePasswordForm />);
-    //   userEvent.click(screen.getByText('Generate'));
-    //   await screen.findByText('You must be logged in to perform this action.');
-    // });
+    it('generate password fails with error', async () => {
+      axios.get.mockRejectedValue(new Error('Network error or any generic error message'));
+      render(<StorePasswordForm />);
+      userEvent.click(screen.getByText('Generate'));
+      await screen.findByText('An error occured while storing the password.');
+    });
   
     it('submits the form successfully', async () => {
       axios.post.mockResolvedValue({ data: { message: 'Password stored successfully' } });

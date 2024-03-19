@@ -36,16 +36,15 @@ function StorePasswordForm() {
       console.log('Password stored successfully:', response.data);
       setSuccessMessage('Password stored successfully');
     } catch (error) {
-      if (error.response && error.response.status === 403) {
-        setApiError('You must be logged in to perform this action.');
-        // Redirect user to login page
-        navigate('/login');
-      } else {
+      // if (error.response && error.response.status === 403) {
+      //   setApiError('You must be logged in to perform this action.');
+      //   // Redirect user to login page
+      //   navigate('/login');
+      // } else {
         // Handle other errors
         console.error('Error storing password:', error.response ? error.response.data : 'Unknown error');
         setApiError('An error occurred while storing the password.');
       }
-    }
   };
 
   const handleGeneratePassword = async () => {
