@@ -37,6 +37,11 @@ class StoredPasswordTests(APITestCase):
         self.assertEqual(StoredPassword.objects.get().website, data['website'])
         self.assertEqual(StoredPassword.objects.get().password, data['password'])
         
+    def test_create_stored_password_unauthorized(self):
+        # Attempt to create a stored password without authentication
+        data = {'website': 'https://example.com', 'username': 'user', 'password': 'pass'}
+        response = self.client.post(self.create_url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 class PasswordRetrievalTests(APITestCase):
     def setUp(self):
@@ -81,6 +86,17 @@ class PasswordRetrievalTests(APITestCase):
         # Check that the response indicates the password is not found
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, {"error": "Password is not found"})
+    
+
+    def test_retrieve_password_unauthorized(self):
+        response = self.client.post(self.retrieve_url, {'website': self.test_website}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_retrieve_password_wrong_method(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(self.retrieve_url, {'website': self.test_website}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 class PasswordUpdateTests(APITestCase):
     def setUp(self):
@@ -128,6 +144,16 @@ class PasswordUpdateTests(APITestCase):
     #     # Check that the response indicates the password is not found
     #     self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
     #     self.assertEqual(response.data, {"error": "Password is not found"})
+        
+    def test_update_password_missing_fields(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(self.update_url, {'website': self.test_website}, format='json')  # Missing 'password'
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_password_nonexistent(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(self.update_url, {'website': 'https://doesnotexist.com', 'password': 'newpass'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class PasswordDeleteTests(APITestCase):
@@ -160,6 +186,15 @@ class PasswordDeleteTests(APITestCase):
         self.assertEqual(response.data, {"error": "Password is not found"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    
+    def test_delete_password_unauthorized(self):
+        response = self.client.delete(self.delete_url, {'website': self.test_website}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_nonexistent_password(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(self.delete_url, {'website': 'https://doesnotexist.com'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class PasswordGenerateTests(APITestCase):
     def setUp(self):
