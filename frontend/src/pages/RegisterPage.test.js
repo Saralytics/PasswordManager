@@ -1,7 +1,7 @@
 /* eslint-disable import/first */
 jest.mock('axios');
 import axios from 'axios';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Register from './RegisterPage'; // Adjust the path as necessary
 
