@@ -101,11 +101,13 @@ function StorePasswordForm() {
       </div>
       {generatedPassword && ( // Display the generated password if available
         <div>
-          <label>Generated Password:</label>
+          <label htmlFor="generated-password-display">Generated Password:</label>
           <input
+            name="generatedPassword"
             type="text"
             value={generatedPassword}
             readOnly
+            data-testid="generated-password-display"
           />
           <button onClick={() => navigator.clipboard.writeText(generatedPassword)}>Copy</button> {/* Copy to clipboard button */}
         </div>

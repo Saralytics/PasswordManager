@@ -25,7 +25,7 @@ describe('LoginPage', () => {
     mockNavigate.mockReset();
   });
 
-  test('validates inputs correctly', async () => {
+  test('when login credentials are empty', async () => {
     render(
       <BrowserRouter>
         <LoginPage />
