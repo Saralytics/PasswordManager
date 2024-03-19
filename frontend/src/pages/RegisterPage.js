@@ -5,9 +5,32 @@ function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [formError, setFormError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isFormValid = () => {
+    if (!username) {
+      setFormError("username must not be empty");
+      return false;
+    } else if (!email.includes("@")) {
+      setFormError("The email format is invalid");
+      return false;
+    } else if (password.length < 8){
+      setFormError("Password length must be greater than or equal to 8");
+      return false;
+    } 
+    setFormError('');
+    return true;
+     
+  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    isFormValid();
+    setIsSubmitting(true);
     try {
       const response = await axios.post('http://localhost:8000/api/register/', {
                   username,
@@ -15,10 +38,13 @@ function Register() {
                   password,
                 });
       console.log(response.data);
-      // Redirect to login page or display success message
+      setSuccessMessage("You have been registered successfully. Please log in.");
+      
     } catch (error) {
       console.error(error);
-      // Handle error (e.g., display error message)
+      setErrorMessage("An error has occured")
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -27,30 +53,37 @@ function Register() {
       {/* Registration Form */}
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username</label>
+          <label htmlFor="username">Username</label>
           <input
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
+        
         <div>
-          <label>Email</label>
+          <label htmlFor="email">Email</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
+        
         <div>
-          <label>Password</label>
+          <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <input type="submit" value="Register" />
+        {formError}
+        <input type="submit" value="Register" disabled={isSubmitting}/>
+        {errorMessage && successMessage}
       </form>
     </div>
   );
