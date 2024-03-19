@@ -17,7 +17,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(), // Mock useNavigate with a jest function
 }));
 import axios from 'axios';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import StorePasswordForm from './PasswordForm';
 import { BrowserRouter as Router } from 'react-router-dom';
