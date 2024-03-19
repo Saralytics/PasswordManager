@@ -1,0 +1,50 @@
+/* styles/global.css */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --font-family: 'Open Sans', sans-serif;
+    --font-size: 16px;
+    --spacing-unit: 8px;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    margin: 0;
+    padding: 0;
+}
+
+input, button {
+    font-family: inherit;
+    font-size: inherit;
+    margin: var(--spacing-unit);
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: var(--spacing-unit) calc(2 * var(--spacing-unit));
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: darken(var(--primary-color), 10%);
+}
+
+input {
+    border: 1px solid var(--secondary-color);
+    padding: var(--spacing-unit);
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    button, input {
+        padding: calc(0.75 * var(--spacing-unit));
+    }
+}
