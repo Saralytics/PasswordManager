@@ -8,6 +8,7 @@ import StorePasswordForm from "./pages/PasswordForm";
 import { AuthProvider } from './utils/AuthContext';
 import LogoutButton from "./components/LogoutButton";
 import ProtectedRoute from './components/ProtectedRoute';
+import { CSRFTokenProvider } from "./utils/CSRFTokenContext";
 
 
 // import axios from "axios";
@@ -18,6 +19,7 @@ function App() {
   return (
     <div className="app">
       <AuthProvider>
+        <CSRFTokenProvider>
         <Router>
           <Header />
           <Routes>
@@ -36,6 +38,7 @@ function App() {
             } />
           </Routes>
         </Router>
+        </CSRFTokenProvider>
       </AuthProvider>
     </div>
     
