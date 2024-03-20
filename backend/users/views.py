@@ -11,6 +11,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.middleware import csrf
 from django.conf import settings
 
+
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
@@ -70,8 +71,8 @@ def login_view(request):
                     httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                     samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-                csrf_token = csrf.get_token(request)
-                response.data = {"Success" : "Login successfully","data":data, 'csrftoken':csrf_token}  
+                
+                response.data = {"Success" : "Login successfully","data":data}  
                 return response
             
         else:
@@ -95,3 +96,9 @@ def verify_user_view(request):
         "isAuthenticated": True,
         "username": request.user.username,
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def get_csrf(request):
+    csrf_token = csrf.get_token(request) # Django sets the token in cookie
+    return JsonResponse({'csrfToken': csrf_token})
