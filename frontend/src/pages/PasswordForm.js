@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useCSRFToken } from '../utils/CSRFTokenContext';
 
 
 function StorePasswordForm() {
@@ -12,6 +13,7 @@ function StorePasswordForm() {
   const [formError, setFormError] = useState(''); 
   const [apiError, setApiError] = useState(''); 
   const [successMessage, setSuccessMessage] = useState('');
+  const {csrfToken} = useCSRFToken();
   let navigate = useNavigate();
 
   const validateForm = () => {
@@ -28,10 +30,14 @@ function StorePasswordForm() {
     e.preventDefault();
     validateForm();
     try {
+      console.log('csrf token: ', csrfToken);
       const response = await axios.post('http://localhost:8000/vault/passwords/create/', {
          website, username, password 
         },{
-            withCredentials: true
+            withCredentials: true,
+            headers: {
+              'X-CSRFToken': csrfToken,
+            }
           });
       console.log('Password stored successfully:', response.data);
       setSuccessMessage('Password stored successfully');
@@ -50,7 +56,10 @@ function StorePasswordForm() {
   const handleGeneratePassword = async () => {
     try {
       const response = await axios.get('http://localhost:8000/vault/passwords/generate/', {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': csrfToken,
+        }
       });
       setGeneratedPassword(response.data.password); // The response has a password field
       setPassword(response.data.password); // Optionally auto-fill the password field with the generated password
