@@ -30,6 +30,7 @@ function StorePasswordForm() {
     e.preventDefault();
     validateForm();
     try {
+      console.log('csrf token: ', csrfToken);
       const response = await axios.post('http://localhost:8000/vault/passwords/create/', {
          website, username, password 
         },{

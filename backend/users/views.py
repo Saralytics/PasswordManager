@@ -70,8 +70,8 @@ def login_view(request):
                     httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                     samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-                csrf.get_token(request)
-                response.data = {"Success" : "Login successfully","data":data} # no 
+                csrf_token = csrf.get_token(request)
+                response.data = {"Success" : "Login successfully","data":data, 'csrftoken':csrf_token}  
                 return response
             
         else:
