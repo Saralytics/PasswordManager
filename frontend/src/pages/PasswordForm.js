@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useCSRFToken } from '../utils/CSRFTokenContext';
+import { getCookie } from '../utils/GetCookie';
 
 
 function StorePasswordForm() {
@@ -13,7 +13,7 @@ function StorePasswordForm() {
   const [formError, setFormError] = useState(''); 
   const [apiError, setApiError] = useState(''); 
   const [successMessage, setSuccessMessage] = useState('');
-  const {csrfToken} = useCSRFToken();
+  const csrfToken = getCookie('csrftoken');
   let navigate = useNavigate();
 
   const validateForm = () => {

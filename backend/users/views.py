@@ -71,7 +71,7 @@ def login_view(request):
                     httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                     samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-                
+                csrf.get_token(request) # Django sets the token in cookie
                 response.data = {"Success" : "Login successfully","data":data}  
                 return response
             
@@ -98,7 +98,3 @@ def verify_user_view(request):
     }, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
-def get_csrf(request):
-    csrf_token = csrf.get_token(request) # Django sets the token in cookie
-    return JsonResponse({'csrfToken': csrf_token})
