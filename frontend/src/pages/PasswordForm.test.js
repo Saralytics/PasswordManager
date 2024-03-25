@@ -76,24 +76,24 @@ describe('StorePasswordForm', () => {
       await screen.findByText('Password stored successfully');
     });
   
-    // it('form submission fails with server error', async () => {
-    //   mockAxios.onPost('http://localhost:8000/vault/passwords/create/').reply(500);
-    //   render(<StorePasswordForm />);
-    //   userEvent.type(screen.getByLabelText('Website URL:'), 'https://example.com');
-    //   userEvent.type(screen.getByLabelText('Username:'), 'user123');
-    //   userEvent.type(screen.getByLabelText('Password:'), 'Password123!');
-    //   fireEvent.click(screen.getByText('Store Password'));
-    //   await screen.findByText('An error occurred while storing the password.');
-    // });
+    it('form submission fails with server error', async () => {
+      axios.get.mockResolvedValue({status: 200});
+      render(<StorePasswordForm />);
+      userEvent.type(screen.getByLabelText('Website URL:'), 'https://example.com');
+      userEvent.type(screen.getByLabelText('Username:'), 'user123');
+      userEvent.type(screen.getByLabelText('Password:'), 'Password123!');
+      fireEvent.click(screen.getByText('Store Password'));
+      await screen.findByText('An error occurred while storing the password.');
+    });
   
-    // it('form submission unauthorized', async () => {
-    //   mockAxios.onPost('http://localhost:8000/vault/passwords/create/').reply(403);
-    //   render(<StorePasswordForm />);
-    //   userEvent.type(screen.getByLabelText('Website URL:'), 'https://example.com');
-    //   userEvent.type(screen.getByLabelText('Username:'), 'user123');
-    //   userEvent.type(screen.getByLabelText('Password:'), 'Password123!');
-    //   fireEvent.click(screen.getByText('Store Password'));
-    //   await screen.findByText('You must be logged in to perform this action.');
-    // });
+    it('form submission unauthorized', async () => {
+      axios.get.mockResolvedValue({status: 403});
+      render(<StorePasswordForm />);
+      userEvent.type(screen.getByLabelText('Website URL:'), 'https://example.com');
+      userEvent.type(screen.getByLabelText('Username:'), 'user123');
+      userEvent.type(screen.getByLabelText('Password:'), 'Password123!');
+      fireEvent.click(screen.getByText('Store Password'));
+      await screen.findByText('You must be logged in to perform this action.');
+    });
   });
   

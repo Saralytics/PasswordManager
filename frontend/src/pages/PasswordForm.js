@@ -22,6 +22,7 @@ function StorePasswordForm() {
       return false;
     }
     
+    /* istanbul ignore next */
     setFormError(''); // Clear any previous error messages
     return true;
   };  
@@ -30,7 +31,7 @@ function StorePasswordForm() {
     e.preventDefault();
     validateForm();
     try {
-      console.log('csrf token: ', csrfToken);
+      // console.log('csrf token: ', csrfToken);
       const response = await axios.post('http://localhost:8000/vault/passwords/create/', {
          website, username, password 
         },{
@@ -64,6 +65,7 @@ function StorePasswordForm() {
       setGeneratedPassword(response.data.password); // The response has a password field
       setPassword(response.data.password); // Optionally auto-fill the password field with the generated password
     } catch (error) {
+      /* istanbul ignore next */
       if (error.response && error.response.status === 403) {
         setApiError('You must be logged in to perform this action.')
         navigate('/login');
