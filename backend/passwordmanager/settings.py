@@ -131,6 +131,9 @@ REST_FRAMEWORK = {
         # 'users.authenticate.CustomAuthentication',
         'users.authenticate.JWTAuthenticationFromCookie',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 CORS_ALLOWED_ORIGINS = [

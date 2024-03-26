@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
 from .serializers import UserSerializer
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
@@ -41,6 +41,7 @@ def user_home(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def user_register(request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -53,6 +54,7 @@ def user_register(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_view(request):
     if request.method == 'POST':
         response = Response()
