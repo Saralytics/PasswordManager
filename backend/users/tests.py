@@ -2,10 +2,12 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from rest_framework import serializers
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework.test import APIClient
+from unittest import skip
+from unittest.mock import patch, MagicMock
+from .authenticate import JWTAuthenticationFromCookie
 
 
 class UserModelTest(TestCase):
@@ -56,14 +58,17 @@ class UserSerializerTest(TestCase):
         """Test that the serializer contains the expected fields."""
         self.serializer.is_valid()
         data = self.serializer.data
-        self.assertEqual(set(data.keys()), set(['username', 'email', 'password']))
+        self.assertEqual(set(data.keys()), set(['username', 'email']))
 
     def test_field_content(self):
         """Test the content of each field."""
-        self.serializer.is_valid()
-        data = self.serializer.data
+        self.assertTrue(self.serializer.is_valid()) # first make sure the serializer is instantiated with valid data
+        user = self.serializer.save()
+        self.assertTrue(user.check_password(self.user_data['password'])) # check_password method is available in the returned user instance by serializer.save()
+
         for field in self.user_data:
-            self.assertEqual(data[field], self.user_data[field])
+            if field != 'password': # compare the other fields because password is set as write-only and won't be visible
+                self.assertEqual(self.serializer.data[field], self.user_data[field])
 
     def test_field_validation(self):
         """Test validation for each field."""
@@ -82,24 +87,31 @@ class UserSerializerTest(TestCase):
         self.assertEqual(User.objects.get().email, self.user_data['email'])
 
 
-    # def test_password_length_validation(self):
-    #     """Test that the password length validation works correctly."""
-    #     short_password_data = {
-    #         'username': 'testuser',
-    #         'email': 'test@example.com',
-    #         'password': 'short'  # Password shorter than 8 characters
-    #     }
+    def test_password_length_validation(self):
+        """Test that the password length validation works correctly."""
+        short_password_data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'password': 'short'  # Password shorter than 8 characters
+        }
         
-    #     with self.assertRaises(ValidationError):
-    #         serializer = UserSerializer(data=short_password_data)
-    #         serializer.is_valid()
-    #         serializer.save()
+        serializer = UserSerializer(data=short_password_data)
+        self.assertFalse(serializer.is_valid())
+
+        self.assertIn('password', serializer.errors)  # Check if there's an error for the password field
+        expected_error_msg = "Password must be at least 8 characters long."  # Or whatever your error message is
+        self.assertIn(expected_error_msg, serializer.errors['password'])
 
 
     def test_valid_data(self):
         """Test serializer with valid data."""
         serializer = UserSerializer(data=self.user_data)
         self.assertTrue(serializer.is_valid())
+
+
+    skip('skip for now')
+    def test_update_data(self):
+        pass
 
 
 class UserTests(APITestCase):
@@ -141,4 +153,14 @@ class UserTests(APITestCase):
         self.assertIn('Invalid Credentials', response.content.decode())
 
 
+class JWTAuthenticationFromCookieTests(TestCase):
+    def setUp(self):
+        self.authentication = JWTAuthenticationFromCookie()
+        self.request = MagicMock()
+        self.request.COOKIES = {}
+
+    def test_no_token(self):
+        """Test the authenticate method returns None when no token is provided."""
+        result = self.authentication.authenticate(self.request)
+        self.assertIsNone(result)
 

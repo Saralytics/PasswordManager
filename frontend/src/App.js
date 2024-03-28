@@ -8,6 +8,8 @@ import StorePasswordForm from "./pages/PasswordForm";
 import { AuthProvider } from './utils/AuthContext';
 import LogoutButton from "./components/LogoutButton";
 import ProtectedRoute from './components/ProtectedRoute';
+import SearchPassword from "./pages/SearchPassword";
+import ListVault from "./pages/ListVault";
 
 
 // import axios from "axios";
@@ -25,9 +27,19 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/search-password" element={
+              <ProtectedRoute>
+                <SearchPassword />
+              </ProtectedRoute>
+            } />
             <Route path="/new-password" element={
               <ProtectedRoute>
                 <StorePasswordForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/list-vault" element={
+              <ProtectedRoute>
+                <ListVault />
               </ProtectedRoute>
             } />
             <Route path="/logout" element={

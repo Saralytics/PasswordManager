@@ -13,7 +13,9 @@ const Header = () => {
           {isAuthenticated ? (
             // Show these links if the user is authenticated
             <>
+              <li><Link to="/search-password">Search Password</Link></li>
               <li><Link to="/new-password">New Password</Link></li>
+              <li><Link to="/list-vault">List Password</Link></li>
               <li><Link to="/logout">Logout</Link></li>
             </>
           ) : (
