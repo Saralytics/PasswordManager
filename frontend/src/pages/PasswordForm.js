@@ -32,7 +32,7 @@ function StorePasswordForm() {
     validateForm();
     try {
       // console.log('csrf token: ', csrfToken);
-      const response = await axios.post('http://localhost:8000/vault/passwords/create/', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/vault/passwords/create/`, {
          website, username, password 
         },{
             withCredentials: true,
@@ -56,7 +56,7 @@ function StorePasswordForm() {
 
   const handleGeneratePassword = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/vault/passwords/generate/', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/vault/passwords/generate/`, {
         withCredentials: true,
         headers: {
           'X-CSRFToken': csrfToken,

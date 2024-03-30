@@ -32,7 +32,7 @@ function Register() {
     isFormValid();
     setIsSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/register/', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/register/`, {
                   username,
                   email,
                   password,

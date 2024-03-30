@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyAuthStatus = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/auth/verify', { withCredentials: true });
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/verify`, { withCredentials: true });
       setIsAuthenticated(true);
       const { username } = response.data;
       setUserName(username);
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      await axios.post('http://localhost:8000/api/auth/', { username, password }, { withCredentials: true });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/`, { username, password }, { withCredentials: true });
       setIsAuthenticated(true);
       setUserName(username);
       localStorage.setItem('username', username);
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:8000/api/logout', {}, { withCredentials: true });
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/logout`, {}, { withCredentials: true });
       setIsAuthenticated(false);
       setUserName('');
       localStorage.removeItem('username');

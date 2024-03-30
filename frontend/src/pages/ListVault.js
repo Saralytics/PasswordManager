@@ -1,65 +1,28 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { getCookie } from '../utils/GetCookie';
-
+import usePasswords from '../hooks/usePasswords';
+import PasswordItem from '../components/PasswordItem';
 
 function ListVault() {
-    const csrfToken = getCookie('csrftoken');
-    const [vault, setVault] = useState([]);
-    const [apiError, setApiError ] = useState('');
+    const { passwords, isLoading, error } = usePasswords(`${process.env.REACT_APP_API_URL}/vault/passwords/list`);
 
-    // function calls api
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setApiError(''); // clear previous error messages
-        try {
-            const response = await axios.get('http://localhost:8000/vault/passwords/list',{
-            withCredentials: true,
-            headers: {
-              'X-CSRFToken': csrfToken,
-            }
-          });
-          setVault(response.data['vault']);
-
-        } catch (error) {
-            const errorMessage = error.response ? error.response.data : 'Unknown error';
-            setApiError(errorMessage);
-        };
-
-    }; 
-
-    const renderErrorMessage = () => (
-        <div style={{ color: 'red' }}>
-          {apiError}
-        </div>
-      );
-
+    if (isLoading) {
+        return <p>Loading passwords...</p>;
+      }
+  
     return (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <h1>Vault</h1>
-            {vault.length > 0 ? (
-              <ul>
-                {vault.map((item) => (
-                  <li key={item.id}>
-                    <div>Website: {item.website}</div>
-                    <div>Username: {item.username}</div>
-                    {/* Consider obscuring sensitive information */}
-                    <div>Password: {item.password}</div>
-                    <div>Created At: {new Date(item.created_at).toLocaleString()}</div>
-                    <div>Updated At: {new Date(item.updated_at).toLocaleString()}</div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Today is a good day</p>
-            )}
-          </div>
-          <button type="submit">List Passwords</button>
-          {apiError && renderErrorMessage()}
-        </form>
-      );
-
-}
-
-export default ListVault;
+      <div>
+        <h1>Vault</h1>
+        <button onClick={() => {}}>List Passwords</button> {/* This can be adapted based on actual use */}
+        {isLoading && <p>Loading...</p>}
+        {!isLoading && error && <p style={{ color: 'red' }}>{error}</p>}
+        <ul>
+          {passwords.map((item) => (
+            <PasswordItem key={item.id} item={item} />
+          ))}
+        </ul>
+      </div>
+    );
+  }
+  
+  export default ListVault;
+  

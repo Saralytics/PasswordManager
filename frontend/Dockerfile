@@ -6,3 +6,4 @@ COPY package*.json /app/frontend/
 RUN npm install
 
 COPY . /app/frontend/
+COPY .env /app/frontend/

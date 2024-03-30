@@ -30,7 +30,7 @@ function SearchPassword() {
     validateForm();
     try {
       // console.log('csrf token: ', csrfToken);
-      const response = await axios.post('http://localhost:8000/vault/passwords/search', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/vault/passwords/search`, {
          website
         },{
             withCredentials: true,

@@ -22,7 +22,7 @@ describe('Register Component', () => {
   
       userEvent.click(screen.getByValue('Register'));
   
-      await waitFor(() => expect(axios.post).toHaveBeenCalledWith('http://localhost:8000/api/register/', {
+      await waitFor(() => expect(axios.post).toHaveBeenCalledWith(`${process.env.REACT_APP_API_URL}/api/register/`, {
         username: 'testUser',
         email: 'test@example.com',
         password: 'password123',
