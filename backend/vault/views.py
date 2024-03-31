@@ -68,11 +68,20 @@ def delete_stored_password(request):
         return Response({"message": "Password deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except StoredPassword.DoesNotExist:
         return Response({"error": "Stored password not found."}, status=status.HTTP_404_NOT_FOUND)
-    
+
+
+def str_to_boolean(value):
+    return value.lower() == 'true'
 
 @api_view(['GET'])
 def password_generate(request):
-    generator = PasswordGenerator()
+    generator = PasswordGenerator(
+        int(request.query_params.get('password_len')),
+        str_to_boolean(request.query_params.get('has_upper_case')),
+        str_to_boolean(request.query_params.get('has_lower_case')),
+        str_to_boolean(request.query_params.get('has_digits')),
+        str_to_boolean(request.query_params.get('has_symbols')),
+        )
     new_password = generator.generate()
 
     # save the new password to cache
