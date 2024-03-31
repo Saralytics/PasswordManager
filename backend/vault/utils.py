@@ -2,7 +2,7 @@ from random import randint, choice, shuffle
 
 
 class PasswordGenerator:
-    def __init__(self, total_len=12, has_upper_case=True, has_lower_case=True, has_digits=True, has_symbols=True):
+    def __init__(self, password_len=12, has_upper_case=True, has_lower_case=True, has_digits=True, has_symbols=True):
         """User will decide how long their password should be, and whether it should contain upper case, 
         lower case, digits, symbols or any combination of the above. This class will automatically 
         assign the number of each character group"""
@@ -37,9 +37,11 @@ class PasswordGenerator:
         
         # Filter indices of active groups based on their flags.
         active_indices = [idx for idx, flag in enumerate(group_flags) if flag]
+        self.password_len = int(password_len)
         
+        print(self.password_len)
         # Distribute total_len across active groups.
-        for _ in range(total_len):
+        for _ in range(self.password_len):
             idx = active_indices[randint(0, len(active_indices) - 1)]
             self.counts[group_names[idx]] += 1
 
@@ -64,8 +66,3 @@ class PasswordGenerator:
         # replace the placeholders of password at random index
         shuffle(candidates)
         return ''.join(candidates)
-
-
-pg = PasswordGenerator(total_len=11, has_upper_case=True, has_lower_case=True, has_digits=True, has_symbols=True)
-pwd = pg.generate()
-print(f"This is your password: {pwd}")

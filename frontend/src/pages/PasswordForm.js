@@ -15,6 +15,12 @@ function StorePasswordForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const csrfToken = getCookie('csrftoken');
   let navigate = useNavigate();
+  const [password_len, setPasswordLen] = useState(12); // Example default length
+  const [has_upper_case, setHasUpperCase] = useState(true);
+  const [has_lower_case, setHasLowerCase] = useState(true);
+  const [has_digits, setHasDigits] = useState(true);
+  const [has_symbols, setHasSymbols] = useState(true);
+
 
   const validateForm = () => {
     if (!website || !username || !password) {
@@ -56,7 +62,14 @@ function StorePasswordForm() {
 
   const handleGeneratePassword = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/vault/passwords/generate/`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/vault/passwords/generate/`,{
+        params: {
+          password_len,
+          has_upper_case,
+          has_lower_case,
+          has_digits,
+          has_symbols
+        },
         withCredentials: true,
         headers: {
           'X-CSRFToken': csrfToken,
@@ -107,7 +120,50 @@ function StorePasswordForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="button" onClick={handleGeneratePassword}>Generate</button> {/* Generate button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <button type="button" onClick={handleGeneratePassword}>Generate</button>
+      <label>
+        Len:
+        <input
+          type="number"
+          value={password_len}
+          onChange={(e) => setPasswordLen(e.target.value)}
+          min="1" // Example minimum length
+        />
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={has_upper_case}
+          onChange={(e) => setHasUpperCase(e.target.checked)}
+        />
+        Upper Case
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={has_lower_case}
+          onChange={(e) => setHasLowerCase(e.target.checked)}
+        />
+        Lower Case
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={has_digits}
+          onChange={(e) => setHasDigits(e.target.checked)}
+        />
+        Digits
+      </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={has_symbols}
+          onChange={(e) => setHasSymbols(e.target.checked)}
+        />
+        Symbols
+      </label>
+    </div>
       </div>
       {generatedPassword && ( // Display the generated password if available
         <div>
