@@ -119,12 +119,15 @@ def check_jwt_expiry(request):
 
         # Assuming "nearing expiry" as less than 5 minutes left
         
-        if time_left < 60:
+        if time_left < 10:
             nearing_expiry = True
             response = JsonResponse({'message': 'Token expired, logging out'})
             response.delete_cookie(jwt_cookie_name)  # Clear the token
             response.delete_cookie('csrftoken')
             return response
+        elif time_left < 60:
+            nearing_expiry = True
+            return JsonResponse({'nearing_expiry': nearing_expiry, 'time_left': time_left})
         elif time_left < 300:
             nearing_expiry = False
             return JsonResponse({'nearing_expiry': nearing_expiry, 'time_left': time_left})

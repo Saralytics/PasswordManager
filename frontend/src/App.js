@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage"; 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -30,7 +30,7 @@ function App() {
       console.log('is not loged in.')
       return;
     };
-    console.log('is logged in, will do polling.')
+    console.log('is logged in, start polling.')
     const checkTokenExpiry = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/token_expiry`, { withCredentials: true });
@@ -39,7 +39,7 @@ function App() {
         if (data.nearing_expiry) {
           console.log("Your session is about to expire. Please log in again.");
           logout();
-          // setIsAuthenticated(false);
+          
           // For a more React-friendly navigation, consider using useNavigate hook from react-router-dom
           // This example uses window.location.href for simplicity
           // window.location.href = '/login'; // Redirect to login page
@@ -50,7 +50,7 @@ function App() {
       }
     };
 
-    // Poll every 5 minutes
+    // Poll every 10 seconds
     const intervalId = setInterval(checkTokenExpiry, 10000);
 
     // Cleanup function to clear the interval when the component unmounts
