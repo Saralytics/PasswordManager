@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       setUserName(username);
       localStorage.setItem('username', username);
+      // window.location.reload(); 
     } catch (error) {
       setIsAuthenticated(false);
       throw error;
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userName, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, userName, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
