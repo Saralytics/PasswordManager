@@ -126,7 +126,8 @@ def check_jwt_expiry(request):
             response.delete_cookie('csrftoken')
             return response
         elif time_left < 300:
-            nearing_expiry = True
+            nearing_expiry = False
+            return JsonResponse({'nearing_expiry': nearing_expiry, 'time_left': time_left})
         else:
             nearing_expiry = False
     except jwt.ExpiredSignatureError as e:

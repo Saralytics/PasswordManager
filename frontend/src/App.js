@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import HomePage from "./pages/HomePage"; 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -19,9 +19,11 @@ import "./App.css";
 
 function App() {
 
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, logout } = useAuth();
 
   useEffect(() => {
+
+    console.log(isAuthenticated);
 
     if (!isAuthenticated) {
       // if not authenticated, disable polling
@@ -36,10 +38,11 @@ function App() {
         console.log(data)
         if (data.nearing_expiry) {
           console.log("Your session is about to expire. Please log in again.");
-          setIsAuthenticated(false);
+          logout();
+          // setIsAuthenticated(false);
           // For a more React-friendly navigation, consider using useNavigate hook from react-router-dom
           // This example uses window.location.href for simplicity
-          window.location.href = '/login'; // Redirect to login page
+          // window.location.href = '/login'; // Redirect to login page
         }
       } catch (error) {
         console.error('Error:', error);
@@ -52,7 +55,7 @@ function App() {
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, [isAuthenticated, setIsAuthenticated]);
+  }, [isAuthenticated, setIsAuthenticated, logout]);
 
   return (
     <div className="app">
