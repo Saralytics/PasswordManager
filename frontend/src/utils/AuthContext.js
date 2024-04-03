@@ -1,7 +1,7 @@
 // AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+
 
 export const AuthContext = createContext();
 
@@ -10,6 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     // Retrieve username from local storage on initial load
@@ -58,8 +59,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const showModal = () => setIsModalOpen(true);
+  const hideModal = () => setIsModalOpen(false);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, userName, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, userName, login, logout, isModalOpen, showModal, hideModal }}>
       {children}
     </AuthContext.Provider>
   );
