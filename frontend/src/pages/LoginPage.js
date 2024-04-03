@@ -27,7 +27,7 @@ const LoginPage = () => {
     try {
       await login(username, password);
       navigate('/new-password'); // Redirect to a protected page or dashboard
-      console.log('Login successful');
+      // console.log('Login successful');
     } catch (error) {
       setLoginError('Username or password is incorrect'); // Set login error state
     }
