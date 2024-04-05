@@ -4,31 +4,49 @@ import { useAuth } from '../utils/AuthContext'; // Adjust this import path accor
 
 const Header = () => {
   const { isAuthenticated } = useAuth(); // Use `useAuth` hook to access authentication state
-  
+
   return (
-    <header>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          {isAuthenticated ? (
-            // Show these links if the user is authenticated
-            <>
-              <li><Link to="/search-password">Search Password</Link></li>
-              <li><Link to="/new-password">New Password</Link></li>
-              <li><Link to="/list-vault">List Password</Link></li>
-              <li><Link to="/logout">Logout</Link></li>
-            </>
-          ) : (
-            // Show these links if the user is not authenticated
-            <>
-              <li><Link to="/login">Login</Link></li>
-              <li><Link to="/register">Register</Link></li>
-            </>
-          )}
-        </ul>
+    <header style={headerStyle}>
+      <nav style={navStyle}>
+        <Link to="/" style={linkStyle}>Home</Link>
+        {isAuthenticated ? (
+          // Show these links if the user is authenticated
+          <>
+            <Link to="/search-password" style={linkStyle}>Search Password</Link>
+            <Link to="/new-password" style={linkStyle}>New Password</Link>
+            <Link to="/list-vault" style={linkStyle}>List Password</Link>
+            <Link to="/logout" style={linkStyle}>Logout</Link>
+          </>
+        ) : (
+          // Show these links if the user is not authenticated
+          <>
+            <Link to="/login" style={linkStyle}>Login</Link>
+            <Link to="/register" style={linkStyle}>Register</Link>
+          </>
+        )}
       </nav>
     </header>
   );
+};
+
+const headerStyle = {
+  backgroundColor: '#005f73', // Example color, adjust as needed
+  color: 'white',
+  padding: '10px 0',
+  textAlign: 'center'
+};
+
+const navStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const linkStyle = {
+  margin: '0 10px',
+  color: 'white',
+  textDecoration: 'none', // Removes underline from links
+  // Add any additional styling here
 };
 
 export default Header;

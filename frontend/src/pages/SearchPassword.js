@@ -49,7 +49,7 @@ function SearchPassword() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="global-content">
       
       <div>
         <label htmlFor="website">Website URL:</label>

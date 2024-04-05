@@ -1,12 +1,12 @@
 /* styles/global.css */
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
-    --error-color: #dc3545;
-    --font-family: 'Open Sans', sans-serif;
-    --font-size: 16px;
-    --spacing-unit: 8px;
+    --primary-color: #005f73; /* A deeper blue for sophistication */
+    --secondary-color: #0a9396; /* A soft teal for complementary accents */
+    --success-color: #94d2bd; /* A calming green for success messages */
+    --error-color: #ee9b00; /* A warm orange for errors, less harsh than red */
+    --font-family: 'Poppins', sans-serif; /* Poppins is modern and readable */
+    --font-size: 16px; /* Keeping the base font size */
+    --spacing-unit: 8px; /* Base spacing */
 }
 
 body {
@@ -16,10 +16,11 @@ body {
     padding: 0;
 }
 
-input, button {
+button, input {
     font-family: inherit;
     font-size: inherit;
     margin: var(--spacing-unit);
+    border-radius: 5px; /* Rounded corners for a softer look */
 }
 
 button {
@@ -28,16 +29,18 @@ button {
     border: none;
     padding: var(--spacing-unit) calc(2 * var(--spacing-unit));
     cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
 }
 
 button:hover {
-    background-color: darken(var(--primary-color), 10%);
+    background-color: #004a5f; /* A slightly darker shade for hover */
 }
 
 input {
     border: 1px solid var(--secondary-color);
     padding: var(--spacing-unit);
 }
+
 
 @media (max-width: 768px) {
     body {
@@ -48,3 +51,45 @@ input {
         padding: calc(0.75 * var(--spacing-unit));
     }
 }
+
+/* Form Styles */
+.form-container {
+    max-width: 500px; /* Example width, adjust as needed */
+    margin: 0 auto; /* Center the form */
+    padding: 20px;
+    background-color: #f7f7f7; /* Light background for the form */
+    border-radius: 8px; /* Rounded corners for the form */
+}
+
+.form-field {
+    margin-bottom: 20px; /* Space between form fields */
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+    width: 30%; 
+    padding: 10px; /* Comfortable padding */
+    margin-top: 5px; /* Small space above inputs */
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 4px; /* Match form border-radius */
+}
+
+input[type="submit"] {
+    background-color: #005f73; /* Primary color */
+    color: white; /* Text color */
+    padding: 10px 20px; /* Padding */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+input[type="submit"]:hover {
+    background-color: #004a5f; /* Slightly darker shade on hover */
+}
+
+.global-content {
+    padding: 20px;
+  }

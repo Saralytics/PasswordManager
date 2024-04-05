@@ -5,7 +5,7 @@ const HomePage = () => {
     const { isAuthenticated, userName } = useAuth();
   
     return (
-      <div>
+      <div className="global-content">
         {isAuthenticated ? (
           <p>Hi {userName}, you are logged in</p>
         ) : (
