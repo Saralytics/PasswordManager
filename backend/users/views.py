@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .serializers import UserSerializer
 from rest_framework.decorators import api_view, permission_classes
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.middleware import csrf
 from django.conf import settings
+import jwt
 
 
 def get_tokens_for_user(user):
@@ -81,10 +83,11 @@ def login_view(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def logout_view(request):
     response = HttpResponse("User logged out")
     response.delete_cookie('access_token')
+    response.delete_cookie('csrftoken')
     return response
 
 
@@ -98,3 +101,44 @@ def verify_user_view(request):
     }, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_jwt_expiry(request):
+    jwt_cookie_name = 'access_token'  # Adjust this to your cookie name
+    token = request.COOKIES.get(jwt_cookie_name, None)
+
+    if not token:
+        # No token found in cookies, handle as you see fit
+        return Response({'error': 'Token not found, might have expired. Try login again'})
+
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        exp = payload.get('exp')
+        current_time = datetime.utcnow()
+        time_left = exp - int(current_time.timestamp())
+
+        # Assuming "nearing expiry" as less than 5 minutes left
+        
+        if time_left < 10:
+            nearing_expiry = True
+            response = JsonResponse({'message': 'Token expired, logging out'})
+            response.delete_cookie(jwt_cookie_name)  # Clear the token
+            response.delete_cookie('csrftoken')
+            return response
+        elif time_left < 60:
+            nearing_expiry = True
+            return JsonResponse({'nearing_expiry': nearing_expiry, 'time_left': time_left})
+        elif time_left < 300:
+            nearing_expiry = False
+            return JsonResponse({'nearing_expiry': nearing_expiry, 'time_left': time_left})
+        else:
+            nearing_expiry = False
+    except jwt.ExpiredSignatureError as e:
+        nearing_expiry = True  # Token has already expired
+        # Token already expired
+        return JsonResponse({'error': str(e)})
+    except jwt.InvalidTokenError as e:
+        # Handle other token errors
+        return JsonResponse({'error': str(e)}, status=400)
+
+    return Response({'nearing_expiry': nearing_expiry,'time_left':time_left})

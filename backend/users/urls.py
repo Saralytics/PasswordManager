@@ -10,4 +10,5 @@ urlpatterns = [
     path("auth/", views.login_view, name="auth"),
     path("logout", views.logout_view, name="logout"),
     path("auth/verify", views.verify_user_view, name="user-verify"),
+    path("auth/token_expiry", views.check_jwt_expiry, name="check-expiry"),
 ]

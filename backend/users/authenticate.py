@@ -29,3 +29,4 @@ class JWTAuthenticationFromCookie(BaseAuthentication):
             return (user, token)
         except InvalidToken as e:
             raise AuthenticationFailed('Invalid token') from e
+        
