@@ -2,10 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import StoredPassword
 from .serializers import PasswordSerializer
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django.conf import settings
 from .utils import PasswordGenerator
 
 
@@ -83,16 +81,6 @@ def password_generate(request):
         str_to_boolean(request.query_params.get('has_symbols')),
         )
     new_password = generator.generate()
-
-    # save the new password to cache
-    # Define a unique cache key for this operation
-    # cache_key = f"user_{request.user.id}_temp_password"
-    # cache_timeout = 600  # Time in seconds for how long the password should be cached (e.g., 10 minutes)
-
-    # Save the new password in the cache
-    # cache.set(cache_key, new_password, cache_timeout)
-
-    # Return the new password to user
     return Response({'password':new_password}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])

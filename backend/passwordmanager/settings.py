@@ -186,3 +186,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+
+MAX_PASS_LEN = 140
+MIN_PASS_LEN = 4
