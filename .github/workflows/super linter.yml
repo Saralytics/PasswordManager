@@ -1,0 +1,39 @@
+name: Super-Linter
+
+# Controls when the action will run. 
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "lint"
+  lint:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      # Runs a set of commands using the runners shell
+      - name: Run Super-Linter
+        uses: github/super-linter@v4
+        env:
+          # Flag to show if you want the linter to lint all files, regardless of git status check
+          VALIDATE_ALL_CODEBASE: false
+          # Default is true. Flag to enable or disable the linting of Markdown files
+          VALIDATE_MARKDOWN: true
+          # You can add additional environment variables to configure various linters
+          LINTER_RULES_PATH: .github/linters
+          # Example: Setting up a custom configuration file for ESLint (for projects with JavaScript)
+          # ESLINT_CONFIG_FILE: .eslintrc.json
+          ENABLE_PYTHON: true
+          ENABLE_JAVASCRIPT: true
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
