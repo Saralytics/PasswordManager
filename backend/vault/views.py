@@ -21,14 +21,14 @@ def retrieve_password(request):
     # get request with website, get password back
     website = request.data.get('website')
     if not website:
-         return Response({"error": "Website is required"}, status=status.HTTP_400_BAD_REQUEST)
+         return JsonResponse({"error": "Website is required"}, status=status.HTTP_400_BAD_REQUEST)
     
     stored_password = StoredPassword.objects.filter(user=request.user, website=website).first() # there should be only 1 password
     if stored_password:
         serializer = PasswordSerializer(stored_password)
-        return Response({"password": serializer.data['password']})
+        return JsonResponse({"password": serializer.data['password']})
     else:
-        return Response({"error": "Password is not found"}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"error": "Password is not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
@@ -58,14 +58,16 @@ def delete_stored_password(request):
     website = request.data.get('website')
 
     if not website:
-        return Response({"error": "Website query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"error": "Website query parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         stored_password = StoredPassword.objects.get(user=request.user, website=website)
         stored_password.delete()
-        return Response({"message": "Password deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({"message": "Password deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
     except StoredPassword.DoesNotExist:
-        return Response({"error": "Stored password not found."}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"error": "Stored password not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(str(e))
 
 
 def str_to_boolean(value):
@@ -73,15 +75,21 @@ def str_to_boolean(value):
 
 @api_view(['GET'])
 def password_generate(request):
-    generator = PasswordGenerator(
-        int(request.query_params.get('password_len')),
-        str_to_boolean(request.query_params.get('has_upper_case')),
-        str_to_boolean(request.query_params.get('has_lower_case')),
-        str_to_boolean(request.query_params.get('has_digits')),
-        str_to_boolean(request.query_params.get('has_symbols')),
+    try:
+        generator = PasswordGenerator(
+            int(request.query_params.get('password_len')),
+            str_to_boolean(request.query_params.get('has_upper_case')),
+            str_to_boolean(request.query_params.get('has_lower_case')),
+            str_to_boolean(request.query_params.get('has_digits')),
+            str_to_boolean(request.query_params.get('has_symbols')),
         )
-    new_password = generator.generate()
-    return Response({'password':new_password}, status=status.HTTP_201_CREATED)
+        new_password = generator.generate()
+        return JsonResponse({'password':new_password}, status=status.HTTP_201_CREATED)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return JsonResponse({'error': 'An error occurred during password generation.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['GET'])
 def list_vault(request):

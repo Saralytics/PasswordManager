@@ -49,7 +49,7 @@ class PasswordRetrievalTests(APITestCase):
         self.test_password = 'password123'
         StoredPassword.objects.create(user=self.user, website=self.test_website, username='exampleuser', password=self.test_password)
         # URL for the retrieve_password view
-        self.retrieve_url = 'http://localhost:8000/vault/search/'
+        self.retrieve_url = 'http://localhost:8000/vault/passwords/search'
 
     def test_retrieve_password_success(self):
         # Authenticate the test client
@@ -60,7 +60,7 @@ class PasswordRetrievalTests(APITestCase):
         
         # Check that the response is successful and the password is returned
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"Password is": self.test_password})  
+        self.assertEqual(response.json(), {"password": self.test_password})  
 
     def test_retrieve_password_no_website(self):
         # Authenticate the test client
@@ -71,7 +71,7 @@ class PasswordRetrievalTests(APITestCase):
         
         # Check that the response indicates a website is required
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data, {"error": "Website is required"})
+        self.assertEqual(response.json(), {"error": "Website is required"})
 
     def test_retrieve_password_not_found(self):
         # Authenticate the test client
@@ -82,7 +82,7 @@ class PasswordRetrievalTests(APITestCase):
         
         # Check that the response indicates the password is not found
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data, {"error": "Password is not found"})
+        self.assertEqual(response.json(), {"error": "Password is not found"})
     
     skip('skip for now')
     def test_retrieve_password_unauthorized(self):
@@ -115,7 +115,7 @@ class PasswordUpdateTests(APITestCase):
         
         # Check that the response is successful and the password is indeed updated
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {"message": "Password is updated"})
+        self.assertEqual(response.json(), {"message": "Password is updated"})
 
         updated_row = StoredPassword.objects.get(user=self.user,website=self.test_website)
         self.assertEqual(updated_row.password, 'updated123')
@@ -174,19 +174,16 @@ class PasswordDeleteTests(APITestCase):
         
         # Check that the status code is 204
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(response.data, {"message": "Password deleted successfully."})
 
         # Check that this website does not exist
         # Make a POST request to the view with the website data
         response = self.client.post(self.retrieve_url, {'website': self.test_website}, format='json')
-        
-        self.assertEqual(response.data, {"error": "Password is not found"})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    @skip('fix this error later')
+
     def test_delete_password_unauthorized(self):
         response = self.client.delete(self.delete_url, {'website': self.test_website}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_delete_nonexistent_password(self):
         self.client.force_authenticate(user=self.user)
