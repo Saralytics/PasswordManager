@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import StoredPassword
 from .serializers import PasswordSerializer
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import PasswordGenerator
@@ -9,11 +9,11 @@ from .utils import PasswordGenerator
 
 @api_view(['POST'])
 def create_stored_password(request):
-        serializer = PasswordSerializer(data=request.data)
-        if serializer.is_valid():
+      serializer = PasswordSerializer(data=request.data)
+      if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
