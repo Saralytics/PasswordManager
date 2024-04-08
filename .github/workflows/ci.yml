@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-lint-and-coverage:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: exampledb
+          POSTGRES_USER: exampleuser
+          POSTGRES_PASSWORD: examplepass
+        ports:
+          - 5432:5432
+        # Ensuring the database service is ready before proceeding
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build backend Docker image
+      run: docker build ./backend -f backend/Dockerfile -t backend-app:latest
+    - name: Run Flake8
+      run: docker run --rm backend-app:latest flake8
+    - name: Run Django tests with coverage
+      run: |
+        docker run --rm \
+        -e DATABASE_URL=postgresql://exampleuser:examplepass@localhost:5432/exampledb \
+        backend-app:latest \
+        bash -c "coverage run --source='.' manage.py test && coverage html"
