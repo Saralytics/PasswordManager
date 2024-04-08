@@ -45,4 +45,4 @@ jobs:
         POSTGRES_DB: postgres
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-      run: docker run --rm --network host backend-app python manage.py test && coverage html"
+      run: docker run --rm --network host backend-app python manage.py test && coverage html
