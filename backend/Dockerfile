@@ -7,6 +7,9 @@ WORKDIR /app/backend
 # Install flake8
 RUN pip install flake8
 
+# Install Pylint for static code analysis
+RUN pip install pylint
+
 COPY requirements.txt /app/backend/
 RUN pip install -r requirements.txt
 COPY . /app/backend/

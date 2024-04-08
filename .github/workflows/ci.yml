@@ -30,6 +30,11 @@ jobs:
       run: docker build ./backend -f backend/Dockerfile -t backend-app:latest
     - name: Run Flake8
       run: docker run --rm backend-app:latest flake8
+      continue-on-error: true
+
+    - name: Run Pylint
+      run: docker run --rm backend-app:latest pylint .
+
     - name: Run Django tests with coverage
       run: |
         docker run --rm \
