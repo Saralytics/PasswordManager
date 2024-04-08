@@ -10,20 +10,20 @@ jobs:
   backend-lint-and-coverage:
     runs-on: ubuntu-latest
     services:
-      postgres:
+      db:
         image: postgres
         env:
           POSTGRES_DB: postgres
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        # Ensuring the database service is ready before proceeding
+          PGDATA: /var/lib/postgresql/data/db/
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432 # Expose PostgreSQL port
     steps:
     - uses: actions/checkout@v2
     - name: Build backend Docker image
@@ -40,8 +40,9 @@ jobs:
       run: docker run --rm backend-app:latest pylint /app/backend/*.py --ignore=manage.py
 
     - name: Run Django tests with coverage
-      run: |
-        docker run --rm \
-        -e DATABASE_URL=postgresql://exampleuser:examplepass@localhost:5432/exampledb \
-        backend-app:latest \
-        bash -c "coverage run --source='.' manage.py test && coverage html"
+      env:
+        DATABASE_HOST: localhost
+        POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      run: docker run --rm --network host backend-app python manage.py test && coverage html"
