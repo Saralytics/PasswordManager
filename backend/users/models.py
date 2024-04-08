@@ -18,10 +18,10 @@
 #     password = models.CharField(max_length=50,validators=[MinLengthValidator(8)])
 #     created_at = models.DateTimeField(auto_now_add=True)
 #     updated_at = models.DateTimeField(auto_now=True)
-    
+
 #     def __str__(self):
 #         return self.username
-    
+
 
 #     def save(self, *args, **kwargs):
 #         # This will run all the validations on the model fields
