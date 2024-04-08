@@ -45,4 +45,9 @@ jobs:
         POSTGRES_DB: postgres
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
-      run: docker run --rm --network host backend-app python manage.py test && coverage html
+      run: docker run --rm --network host -v ${PWD}/htmlcov:/app/backend/htmlcov backend-app /bin/sh -c "python manage.py test && coverage html"
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: htmlcov/
