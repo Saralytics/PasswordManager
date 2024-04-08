@@ -32,10 +32,6 @@ jobs:
       run: docker run --rm backend-app:latest flake8
       continue-on-error: true
 
-    - name: List files
-      run: docker run --rm backend-app:latest ls -la
-
-
     - name: Run Pylint
       run: docker run --rm backend-app:latest pylint /app/backend/*.py --ignore=manage.py
 
