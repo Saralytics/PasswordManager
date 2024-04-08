@@ -37,7 +37,7 @@ jobs:
 
 
     - name: Run Pylint
-      run: docker run --rm backend-app:latest pylint .
+      run: docker run --rm backend-app:latest pylint /app/backend/*
 
     - name: Run Django tests with coverage
       run: |
