@@ -37,7 +37,7 @@ def user_home(request):
         # # Serialize the user
         # user_serializer = UserSerializer(user)
 
-        return HttpResponse(f"Hi, you are logged in")
+        return HttpResponse("Hi, you are logged in")
 
 
 @api_view(['POST'])
@@ -45,7 +45,7 @@ def user_home(request):
 def user_register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save()
+        serializer.save()
         return Response({
             "user": serializer.data
         }, status=status.HTTP_201_CREATED)
