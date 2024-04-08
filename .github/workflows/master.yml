@@ -1,0 +1,15 @@
+name: Continuous Integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+        - main
+concurrency:
+    group: main
+    cancel-in-progress: true
+
+jobs:
+  qa:
+    name: Quality Assurance
+    uses: ./.github/workflows/pr.yml
