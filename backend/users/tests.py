@@ -45,7 +45,7 @@ class UserModelTest(TestCase):
 
 
 class UserSerializerTest(TestCase):
-    
+
     def setUp(self):
         self.user_data = {
             'username': 'testuser',
@@ -62,13 +62,16 @@ class UserSerializerTest(TestCase):
 
     def test_field_content(self):
         """Test the content of each field."""
-        self.assertTrue(self.serializer.is_valid()) # first make sure the serializer is instantiated with valid data
+        self.assertTrue(self.serializer.is_valid(
+        ))  # first make sure the serializer is instantiated with valid data
         user = self.serializer.save()
-        self.assertTrue(user.check_password(self.user_data['password'])) # check_password method is available in the returned user instance by serializer.save()
+        # check_password method is available in the returned user instance by serializer.save()
+        self.assertTrue(user.check_password(self.user_data['password']))
 
         for field in self.user_data:
-            if field != 'password': # compare the other fields because password is set as write-only and won't be visible
-                self.assertEqual(self.serializer.data[field], self.user_data[field])
+            if field != 'password':  # compare the other fields because password is set as write-only and won't be visible
+                self.assertEqual(
+                    self.serializer.data[field], self.user_data[field])
 
     def test_field_validation(self):
         """Test validation for each field."""
@@ -83,9 +86,9 @@ class UserSerializerTest(TestCase):
         self.serializer.is_valid()
         self.serializer.save()
         self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(User.objects.get().username, self.user_data['username'])
+        self.assertEqual(User.objects.get().username,
+                         self.user_data['username'])
         self.assertEqual(User.objects.get().email, self.user_data['email'])
-
 
     def test_password_length_validation(self):
         """Test that the password length validation works correctly."""
@@ -94,22 +97,23 @@ class UserSerializerTest(TestCase):
             'email': 'test@example.com',
             'password': 'short'  # Password shorter than 8 characters
         }
-        
+
         serializer = UserSerializer(data=short_password_data)
         self.assertFalse(serializer.is_valid())
 
-        self.assertIn('password', serializer.errors)  # Check if there's an error for the password field
-        expected_error_msg = "Password must be at least 8 characters long."  # Or whatever your error message is
+        # Check if there's an error for the password field
+        self.assertIn('password', serializer.errors)
+        # Or whatever your error message is
+        expected_error_msg = "Password must be at least 8 characters long."
         self.assertIn(expected_error_msg, serializer.errors['password'])
-
 
     def test_valid_data(self):
         """Test serializer with valid data."""
         serializer = UserSerializer(data=self.user_data)
         self.assertTrue(serializer.is_valid())
 
-
     skip('skip for now')
+
     def test_update_data(self):
         pass
 
@@ -117,7 +121,8 @@ class UserSerializerTest(TestCase):
 class UserTests(APITestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username='testuser', password='testpassword123')
+        self.user = User.objects.create_user(
+            username='testuser', password='testpassword123')
 
     def test_user_list(self):
         self.client.force_authenticate(user=self.user)
@@ -127,28 +132,32 @@ class UserTests(APITestCase):
         self.assertIn('Hi, you are logged in', response.content.decode())
 
     def test_user_list_unauth(self):
-        
+
         url = "http://localhost:8000/api/users/"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_user_register(self):
-        data = {'username': 'newuser', 'password': 'newpassword123', 'email': 'newuser@example.com'}
+        data = {'username': 'newuser', 'password': 'newpassword123',
+                'email': 'newuser@example.com'}
         url = "http://localhost:8000/api/register/"
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 2)
-        self.assertEqual(User.objects.get(username='newuser').username, 'newuser')
+        self.assertEqual(User.objects.get(
+            username='newuser').username, 'newuser')
 
     def test_login_view(self):
         # Successful login
         url = "http://localhost:8000/api/auth/"
-        response = self.client.post(url, {'username': 'testuser', 'password': 'testpassword123'}) 
+        response = self.client.post(
+            url, {'username': 'testuser', 'password': 'testpassword123'})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('Login successfully', response.content.decode())
 
         # Unsuccessful login
-        response = self.client.post(url, {'username': 'testuser', 'password': 'wrongpassword'})
+        response = self.client.post(
+            url, {'username': 'testuser', 'password': 'wrongpassword'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertIn('Invalid Credentials', response.content.decode())
 
@@ -163,4 +172,3 @@ class JWTAuthenticationFromCookieTests(TestCase):
         """Test the authenticate method returns None when no token is provided."""
         result = self.authentication.authenticate(self.request)
         self.assertIsNone(result)
-

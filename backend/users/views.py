@@ -20,7 +20,7 @@ def get_tokens_for_user(user):
     }
 
 
-@api_view(['GET','PUT'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def user_home(request):
     if request.method == 'GET':
@@ -37,20 +37,20 @@ def user_home(request):
         # # Serialize the user
         # user_serializer = UserSerializer(user)
 
-        return HttpResponse(f"Hi, you are logged in")
+        return HttpResponse("Hi, you are logged in")
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_register(request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                "user": serializer.data
-            }, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            "user": serializer.data
+        }, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -66,17 +66,17 @@ def login_view(request):
             if user.is_active:
                 data = get_tokens_for_user(user)
                 response.set_cookie(
-                    key = settings.SIMPLE_JWT['AUTH_COOKIE'],
-                    value = data["access"],
-                    expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                    secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-                    httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-                    samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
+                    key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+                    value=data["access"],
+                    expires=settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+                    secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                    httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                    samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE']
                 )
-                csrf.get_token(request) # Django sets the token in cookie
-                response.data = {"Success" : "Login successfully","data":data}  
+                csrf.get_token(request)  # Django sets the token in cookie
+                response.data = {"Success": "Login successfully", "data": data}
                 return response
-            
+
         else:
             # Authentication failed
             return Response({'message': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -118,7 +118,7 @@ def check_jwt_expiry(request):
         time_left = exp - int(current_time.timestamp())
 
         # Assuming "nearing expiry" as less than 5 minutes left
-        
+
         if time_left < 10:
             nearing_expiry = True
             response = JsonResponse({'message': 'Token expired, logging out'})
@@ -141,4 +141,4 @@ def check_jwt_expiry(request):
         # Handle other token errors
         return JsonResponse({'error': str(e)}, status=400)
 
-    return Response({'nearing_expiry': nearing_expiry,'time_left':time_left})
+    return Response({'nearing_expiry': nearing_expiry, 'time_left': time_left})

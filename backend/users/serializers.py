@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -10,7 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         """Check that the password is at least 8 characters long."""
         if len(value) < 8:
-            raise serializers.ValidationError("Password must be at least 8 characters long.")
+            raise serializers.ValidationError(
+                "Password must be at least 8 characters long.")
         return value
 
     def create(self, validated_data):
@@ -20,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
-    
+
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

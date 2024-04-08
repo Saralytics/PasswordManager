@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend-lint-and-coverage:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          PGDATA: /var/lib/postgresql/data/db/
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432 # Expose PostgreSQL port
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build backend Docker image
+      run: docker build ./backend -f backend/Dockerfile -t backend-app:latest
+    - name: Run Flake8
+      run: docker run --rm backend-app:latest flake8
+      continue-on-error: true
+
+    - name: List files
+      run: docker run --rm backend-app:latest ls -la
+
+
+    - name: Run Pylint
+      run: docker run --rm backend-app:latest pylint /app/backend/*.py --ignore=manage.py
+
+    - name: Run Django tests with coverage
+      env:
+        DATABASE_HOST: localhost
+        POSTGRES_DB: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      run: docker run --rm --network host -v ${PWD}/htmlcov:/app/backend/htmlcov backend-app /bin/sh -c "coverage run --source='.' manage.py test && coverage report && coverage html"
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: htmlcov/
