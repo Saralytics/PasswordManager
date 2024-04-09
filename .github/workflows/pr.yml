@@ -28,9 +28,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build backend Docker image
       run: docker build ./backend -f backend/Dockerfile -t backend-app:latest
-    - name: Run Flake8
-      run: docker run --rm backend-app:latest flake8
-      continue-on-error: true
 
     - name: Run Pylint
       run: docker run --rm backend-app:latest pylint /app/backend/*.py --ignore=manage.py
