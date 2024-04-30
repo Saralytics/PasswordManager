@@ -1,10 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import StoredPassword
 from .serializers import PasswordSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import PasswordGenerator
+from rest_framework.throttling import UserRateThrottle
 
 
 @api_view(['POST'])
@@ -17,6 +18,7 @@ def create_stored_password(request):
 
 
 @api_view(['POST'])
+@throttle_classes([UserRateThrottle])
 def retrieve_password(request):
     # get request with website, get password back
     website = request.data.get('website')
@@ -24,10 +26,12 @@ def retrieve_password(request):
         return JsonResponse({"error": "Website is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     stored_password = StoredPassword.objects.filter(
-        user=request.user, website=website).first()  # there should be only 1 password
+        # there should be only 1 password
+        user=request.user, website=website).first()
     if stored_password:
         serializer = PasswordSerializer(stored_password)
         return JsonResponse({"password": serializer.data['password']})
+
     else:
         return JsonResponse({"error": "Password is not found"}, status=status.HTTP_404_NOT_FOUND)
 
