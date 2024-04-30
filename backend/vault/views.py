@@ -1,10 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .models import StoredPassword
 from .serializers import PasswordSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .utils import PasswordGenerator
+from rest_framework.throttling import UserRateThrottle
 
 
 @api_view(['POST'])
@@ -17,6 +18,7 @@ def create_stored_password(request):
 
 
 @api_view(['POST'])
+@throttle_classes([UserRateThrottle])
 def retrieve_password(request):
     # get request with website, get password back
     website = request.data.get('website')
