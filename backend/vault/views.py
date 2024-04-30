@@ -24,7 +24,8 @@ def retrieve_password(request):
         return JsonResponse({"error": "Website is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     stored_password = StoredPassword.objects.filter(
-        user=request.user, website=website).first()  # there should be only 1 password
+        # there should be only 1 password
+        user=request.user, website=website).first()
     if stored_password:
         serializer = PasswordSerializer(stored_password)
         return JsonResponse({"password": serializer.data['password']})

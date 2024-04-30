@@ -16,9 +16,13 @@ function ListVault() {
         {isLoading && <p>Loading...</p>}
         {!isLoading && error && <p style={{ color: 'red' }}>{error}</p>}
         <ul>
-          {passwords.map((item) => (
+        {passwords ? (
+          passwords.map((item) => (
             <PasswordItem key={item.id} item={item} />
-          ))}
+          ))
+        ) : (
+          <p>No passwords found</p>
+        )}
         </ul>
       </div>
     );

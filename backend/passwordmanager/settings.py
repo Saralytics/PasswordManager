@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from cryptography.fernet import Fernet
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -144,8 +145,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False,
@@ -195,3 +196,12 @@ CACHES = {
 
 MAX_PASS_LEN = 140
 MIN_PASS_LEN = 4
+
+
+# Get the Fernet encryption key from environment variables
+FERNET_ENCRYPTION_KEY = os.environ.get("FERNET_ENCRYPTION_KEY")
+
+if not FERNET_ENCRYPTION_KEY:
+    raise ValueError("FERNET_ENCRYPTION_KEY environment variable is not set.")
+
+fernet = Fernet(FERNET_ENCRYPTION_KEY)
