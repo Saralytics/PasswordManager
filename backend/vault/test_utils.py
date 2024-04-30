@@ -2,6 +2,9 @@ from django.test import TestCase
 from vault.utils import PasswordGenerator
 from unittest import skip
 from passwordmanager.settings import MIN_PASS_LEN, MAX_PASS_LEN
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 
 class TestPasswordGenerator(TestCase):
@@ -64,8 +67,10 @@ class TestPasswordGenerator(TestCase):
         """Generated passwords should accurately reflect requested configurations."""
         # Example: Testing generation with only digits
         generator = PasswordGenerator(
-            has_digits="True", has_upper_case="False", has_lower_case="False", has_symbols="False")
+            has_digits=True, has_upper_case=False, has_lower_case=False, has_symbols=False)
+
         password = generator.generate()
+
         self.assertTrue(password.isdigit(
         ), "Generated password does not match the digit-only configuration.")
 
@@ -87,15 +92,17 @@ class TestPasswordGenerator(TestCase):
 
     def test_minimum_length(self):
         """Ensure password meets the minimum length requirement."""
-        self.generator.password_len = MIN_PASS_LEN
-        password = self.generator.generate()
+
+        generator = PasswordGenerator(password_len=MIN_PASS_LEN)
+        password = generator.generate()
         self.assertEqual(len(password), MIN_PASS_LEN,
                          "Password does not meet the minimum length requirement.")
 
     def test_maximum_length(self):
         """Ensure password does not exceed the maximum length requirement."""
-        self.generator.password_len = MAX_PASS_LEN
-        password = self.generator.generate()
+        generator = PasswordGenerator(password_len=MAX_PASS_LEN)
+        password = generator.generate()
+
         self.assertEqual(len(password), MAX_PASS_LEN,
                          "Password exceeds the maximum length requirement.")
 
@@ -111,7 +118,7 @@ class TestPasswordGenerator(TestCase):
     def test_unique_configurations(self):
         """Test passwords generated with unique configurations (e.g., only digits)."""
         self.generator = PasswordGenerator(
-            has_upper_case="False", has_lower_case="False", has_digits="True", has_symbols="False")
+            has_upper_case=False, has_lower_case=False, has_digits=True, has_symbols=False)
         password = self.generator.generate()
         self.assertTrue(password.isdigit(),
                         "Password should contain only digits.")
