@@ -29,6 +29,7 @@ def retrieve_password(request):
     if stored_password:
         serializer = PasswordSerializer(stored_password)
         return JsonResponse({"password": serializer.data['password']})
+
     else:
         return JsonResponse({"error": "Password is not found"}, status=status.HTTP_404_NOT_FOUND)
 

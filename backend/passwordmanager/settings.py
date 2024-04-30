@@ -196,12 +196,3 @@ CACHES = {
 
 MAX_PASS_LEN = 140
 MIN_PASS_LEN = 4
-
-
-# Get the Fernet encryption key from environment variables
-FERNET_ENCRYPTION_KEY = os.environ.get("FERNET_ENCRYPTION_KEY")
-
-if not FERNET_ENCRYPTION_KEY:
-    raise ValueError("FERNET_ENCRYPTION_KEY environment variable is not set.")
-
-fernet = Fernet(FERNET_ENCRYPTION_KEY)
