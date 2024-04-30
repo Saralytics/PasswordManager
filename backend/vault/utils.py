@@ -1,26 +1,24 @@
 from random import randint, choice, shuffle
+import string
+from passwordmanager.settings import MAX_PASS_LEN, MIN_PASS_LEN
 
 
 class PasswordGenerator:
-    def __init__(self, password_len=12, has_upper_case=True, has_lower_case=True, has_digits=True, has_symbols=True):
+    def __init__(self, password_len: int = 12, has_upper_case=True, has_lower_case=True, has_digits=True, has_symbols=True):
         """User will decide how long their password should be, and whether it should contain upper case, 
         lower case, digits, symbols or any combination of the above. This class will automatically 
         assign the number of each character group"""
-        self.upper_case_letters = [
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-            'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-            'Q', 'R', 'S', 'T', 'U', 'V',
-            'W', 'X', 'Y', 'Z']
+        self.upper_case_letters = string.ascii_uppercase
+        self.lower_case_letters = string.ascii_lowercase
+        self.digits = string.digits
+        self.symbols = "!@#$%^&*()-_=+[]{};:,.?"
 
-        self.lower_case_letters = ['a', 'b', 'c', 'd', 'e', 'f',
-                                   'g', 'h', 'i', 'j', 'k', 'l',
-                                   'm', 'n', 'o', 'p', 'q', 'r',
-                                   's', 't', 'u', 'v', 'w', 'x',
-                                   'y', 'z']
-
-        self.digits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-        self.symbols = ['@', '#', '$', '%', '&', '(', ')', '*', '+', '!', '~']
+        self.password_len = password_len
+        self.has_upper_case = has_upper_case
+        self.has_lower_case = has_lower_case
+        self.has_digits = has_digits
+        self.has_symbols = has_symbols
+        self.validate_password_len(self.password_len)
 
         # distribute the available positions among character groups
         # Should have max and min password length constraints
@@ -40,11 +38,23 @@ class PasswordGenerator:
         active_indices = [idx for idx, flag in enumerate(group_flags) if flag]
         self.password_len = int(password_len)
 
-        print(self.password_len)
         # Distribute total_len across active groups.
         for _ in range(self.password_len):
             idx = active_indices[randint(0, len(active_indices) - 1)]
             self.counts[group_names[idx]] += 1
+
+    def validate_password_len(self, password_len):
+        if not (MIN_PASS_LEN <= password_len <= MAX_PASS_LEN):
+            raise ValueError(
+                f"Password length must be between {MIN_PASS_LEN} and {MAX_PASS_LEN} characters.")
+
+    def is_config_valid(self):
+        """at least one of the configuration choices are selected"""
+        if not any([self.has_upper_case, self.has_lower_case, self.has_digits, self.has_symbols]):
+            raise ValueError(
+                "Choose at least one of the character groups.")
+        else:
+            return True
 
     def generate(self):
         # Create a pool of candidates to fill in the password
